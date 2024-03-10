@@ -30,4 +30,4 @@ async def verify_webhook(request: Request):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="77.37.44.233", port=8000)
