@@ -29,7 +29,7 @@ def processWhatsAppMessage(body):
                 msg_body = body["entry"][0]["changes"][0]["value"]["messages"][0]["text"]["body"]
                 if msg_body == "Hi" or msg_body == "hi":
                     user = check_if_user_exists(from_number[2:],db)
-                    if user.user_session_number == 0:
+                    if user.user_session_number < 5:
                         _send_welcome_code = sendWelcomeMessage(from_number,user)
                         _update_session_code = update_user_session_number(from_number[2:],1,db)
                         if _send_welcome_code == 200 and _update_session_code:

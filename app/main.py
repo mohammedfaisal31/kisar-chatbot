@@ -17,6 +17,7 @@ app = FastAPI()
 @app.post("/webhook")
 async def webhook(request: Request):
     body = await request.json()
+    print(body)
     response = processWhatsAppMessage(body)
     return {"status": "ok"}
 
