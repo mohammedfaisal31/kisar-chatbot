@@ -11,6 +11,8 @@ load_dotenv()
 whatsapp_token = os.getenv("WHATSAPP_TOKEN")
 phone_number_id = os.getenv("PHONE_NUMBER_ID")
 url = os.getenv("WHATSAPP_API_URL")
+host = os.getenv("HOST")
+
 db = get_db()
 
 def processWhatsAppMessage(body):
@@ -138,7 +140,49 @@ def sendWelcomeMessage(to,user):
     response.raise_for_status()  
     return response.status_code 
 
-            
+def sendRegisterTemplate(to):
+    payload = {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": "919353676794",
+                "type": "template",
+                "template": {
+                "name": "south_isar",
+                "language": {
+                    "code": "en"
+                },
+                "components": [
+                    {
+                    "type": "header",
+                    "parameters": [
+                        {
+                        "type": "image",
+                        "image": {
+                            "link": f"{host}/template/banner.jpg"
+                        }
+                        }
+                    ]
+                    },
+                    {
+                    "type": "button",
+                    "sub_type": "quick_reply",
+                    "index": "0",
+                    "parameters": [
+                        {
+                        "type": "payload",
+                        "payload": "PAYLOAD"
+                        }
+                    ]
+                    }
+                ]
+                }
+            }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()  
+    return response.status_code 
+
 def sendPackageConfirmMessage(to, selection):
     payload = {
         "messaging_product":"whatsapp",
