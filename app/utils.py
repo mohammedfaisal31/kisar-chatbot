@@ -107,7 +107,7 @@ def processWhatsAppMessage(body):
                     if user_session_number == 0:
                         _send_form = sendFormLink(from_number)
                     elif user_session_number == None:
-                        _create_session = createUserSession(from_number[2:])
+                        _create_session = createUserSession(from_number[2:],db)
                         if _create_session:
                             _send_form = sendFormLink(from_number)
             else :
