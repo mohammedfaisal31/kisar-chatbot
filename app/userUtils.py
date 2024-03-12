@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.exc import NoResultFound
-from models import User  
+from models import User,SessionManager
 from sqlalchemy.exc import IntegrityError
 
 
@@ -68,3 +68,23 @@ def create_user(user_honorific, user_first_name, user_middle_name, user_last_nam
     finally:
         db.close()
 
+def createUserSession(phone,db):
+    try:
+        new_session = SessionManager(user_phone=phone)
+        db.add(new_session)
+        db.commit()
+        return True
+    except IntegrityError:
+        db.rollback()
+        return False 
+    finally:
+        db.close()
+
+def checkUserSessionNumber(phone,db):
+    try:
+        result = db.query(SessionManager).filter_by(user_phone=phone).one()
+        return result["session_number"]
+    except NoResultFound:
+        return None
+    finally:
+        db.close()

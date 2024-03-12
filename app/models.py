@@ -30,6 +30,10 @@ class Package(Base):
     package_occupancy = Column(Enum("Single", "Double"), nullable=False)
     package_duration = Column(Enum("One-day", "Two-day","Non-Residential"),server_default="Non-Residential", nullable=False)
     
+class SessionManager(Base):
+    __tablename__ = "packages"
+    user_phone = Column(Column(String(10)) ,unique=True,index=True)
+    session_number = Column(Integer,server_default="0")
     
     
     

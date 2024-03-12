@@ -12,7 +12,7 @@ whatsapp_token = os.getenv("WHATSAPP_TOKEN")
 phone_number_id = os.getenv("PHONE_NUMBER_ID")
 url = os.getenv("WHATSAPP_API_URL")
 host = os.getenv("HOST")
-
+form_link = os.getenv("FORM_LINK")
 db = get_db()
 
 def processWhatsAppMessage(body):
@@ -27,84 +27,91 @@ def processWhatsAppMessage(body):
             from_number = body["entry"][0]["changes"][0]["value"]["messages"][0]["from"]
             
             
-            if body["entry"][0]["changes"][0]["value"]["messages"][0]["type"] == "text":
-                msg_body = body["entry"][0]["changes"][0]["value"]["messages"][0]["text"]["body"]
-                if msg_body == "Hi" or msg_body == "hi":
-                    user = check_if_user_exists(from_number[2:],db)
-                    if user.user_session_number < 5:
-                        _send_welcome_code = sendWelcomeMessage(from_number,user)
-                        _update_session_code = update_user_session_number(from_number[2:],1,db)
-                        if _send_welcome_code == 200 and _update_session_code:
-                            _send_plans_response = send_plans(from_number)
-                            _update_session_code = update_user_session_number(from_number[2:],2,db)
-                            if _send_plans_response == 200 and _update_session_code:
-                                return True
-                    elif user == None:
-                        print("User not Registered")
-                        #Send Google form link
-                    else:
-                        print("User Already Registered")
-                else:
-                    _try_again_response = sendTryAgainMessage(from_number)
-                    if _try_again_response == 200:
-                        return True
-            elif body["entry"][0]["changes"][0]["value"]["messages"][0]["type"] == "interactive":
-                if body["entry"][0]["changes"][0]["value"]["messages"][0]["interactive"]["type"] == "list_reply":
-                    user_selection = body["entry"][0]["changes"][0]["value"]["messages"][0]["interactive"]["list_reply"]
+            # if body["entry"][0]["changes"][0]["value"]["messages"][0]["type"] == "text":
+            #     msg_body = body["entry"][0]["changes"][0]["value"]["messages"][0]["text"]["body"]
+            #     if msg_body == "Hi" or msg_body == "hi":
+            #         user = check_if_user_exists(from_number[2:],db)
+            #         if user.user_session_number < 5:
+            #             _send_welcome_code = sendWelcomeMessage(from_number,user)
+            #             _update_session_code = update_user_session_number(from_number[2:],1,db)
+            #             if _send_welcome_code == 200 and _update_session_code:
+            #                 _send_plans_response = send_plans(from_number)
+            #                 _update_session_code = update_user_session_number(from_number[2:],2,db)
+            #                 if _send_plans_response == 200 and _update_session_code:
+            #                     return True
+            #         elif user == None:
+            #             print("User not Registered")
+            #             #Send Google form link
+            #         else:
+            #             print("User Already Registered")
+            #     else:
+            #         _try_again_response = sendTryAgainMessage(from_number)
+            #         if _try_again_response == 200:
+            #             return True
+            # elif body["entry"][0]["changes"][0]["value"]["messages"][0]["type"] == "interactive":
+            #     if body["entry"][0]["changes"][0]["value"]["messages"][0]["interactive"]["type"] == "list_reply":
+            #         user_selection = body["entry"][0]["changes"][0]["value"]["messages"][0]["interactive"]["list_reply"]
 
-                    confirmation_message = ""
-                    package_id = 0
-                    if user_selection["id"] == "1":
-                        confirmation_message = "*Non residential package* \n*Price*: ₹14,000"
-                        package_id = 1
-                    elif user_selection["id"] == "2":
-                        confirmation_message = "*Non residential package* With an accompanying peron \n*Total Price*: ₹26,000"
-                        package_id = 2
-                    elif user_selection["id"] == "3":
-                        confirmation_message = "*Residential package*\nSingle Occupancy for One day\n*Price*: ₹27,000"
-                        package_id = 3
-                    elif user_selection["id"] == "4":
-                        confirmation_message = "*Residential package*\nSingle Occupancy for Two days\n*Price*: ₹39,000"
-                        package_id = 4
-                    elif user_selection["id"] == "5":
-                        confirmation_message = "*Residential package*\Double Occupancy for One day\n*Price*: ₹23,000"
-                        package_id = 5
-                    elif user_selection["id"] == "6":
-                        confirmation_message = "*Residential package*\Double Occupancy for Two days\n*Price*: ₹31,000"
-                        package_id = 6
-                    else :
-                        print("Invalid!")
-                    _upadte_user_package_code = update_user_package_id(from_number[2:],package_id,db)
-                    if _upadte_user_package_code:
-                        _user_session_number = get_user_session_number(from_number[2:],db)
-                        if _user_session_number == 2:
-                            _send_confirm_code = sendPackageConfirmMessage(from_number,confirmation_message)
-                            if _send_confirm_code == 200:
-                                _update_user_session_code = update_user_session_number(from_number[2:],3,db)
-                                if _update_user_session_code:
-                                    return True
-                elif body["entry"][0]["changes"][0]["value"]["messages"][0]["interactive"]["type"] == "button_reply":
-                    user_selection = body["entry"][0]["changes"][0]["value"]["messages"][0]["interactive"]["button_reply"]
+            #         confirmation_message = ""
+            #         package_id = 0
+            #         if user_selection["id"] == "1":
+            #             confirmation_message = "*Non residential package* \n*Price*: ₹14,000"
+            #             package_id = 1
+            #         elif user_selection["id"] == "2":
+            #             confirmation_message = "*Non residential package* With an accompanying peron \n*Total Price*: ₹26,000"
+            #             package_id = 2
+            #         elif user_selection["id"] == "3":
+            #             confirmation_message = "*Residential package*\nSingle Occupancy for One day\n*Price*: ₹27,000"
+            #             package_id = 3
+            #         elif user_selection["id"] == "4":
+            #             confirmation_message = "*Residential package*\nSingle Occupancy for Two days\n*Price*: ₹39,000"
+            #             package_id = 4
+            #         elif user_selection["id"] == "5":
+            #             confirmation_message = "*Residential package*\Double Occupancy for One day\n*Price*: ₹23,000"
+            #             package_id = 5
+            #         elif user_selection["id"] == "6":
+            #             confirmation_message = "*Residential package*\Double Occupancy for Two days\n*Price*: ₹31,000"
+            #             package_id = 6
+            #         else :
+            #             print("Invalid!")
+            #         _upadte_user_package_code = update_user_package_id(from_number[2:],package_id,db)
+            #         if _upadte_user_package_code:
+            #             _user_session_number = get_user_session_number(from_number[2:],db)
+            #             if _user_session_number == 2:
+            #                 _send_confirm_code = sendPackageConfirmMessage(from_number,confirmation_message)
+            #                 if _send_confirm_code == 200:
+            #                     _update_user_session_code = update_user_session_number(from_number[2:],3,db)
+            #                     if _update_user_session_code:
+            #                         return True
+            # elif body["entry"][0]["changes"][0]["value"]["messages"][0]["interactive"]["type"] == "button_reply":
+            #     user_selection = body["entry"][0]["changes"][0]["value"]["messages"][0]["interactive"]["button_reply"]
 
-                    if user_selection["id"] == "PS-1":
-                        _user_session_number = get_user_session_number(from_number[2:],db)
-                        if _user_session_number == 3:
-                            _send_payment_link_code = sendPaymentLink(from_number)
-                            _update_user_session_code = update_user_session_number(from_number[2:],4,db)
-                            if _update_user_session_code and _send_payment_link_code == 200:
-                                return True
-                    elif user_selection["id"] == "PS-2":
-                        _user_session_number = get_user_session_number(from_number[2:],db)
-                        if _user_session_number == 3:
-                            _send_terminate_code = sendConversationTerminateMessage(from_number)
-                            if _send_terminate_code == 200:
-                                _update_user_session_code = update_user_session_number(from_number[2:],0,db)
-                                if _update_user_session_code:
-                                    return True
-
-
-                    else :
-                        print("Invalid!")
+            #     if user_selection["id"] == "PS-1":
+            #         _user_session_number = get_user_session_number(from_number[2:],db)
+            #         if _user_session_number == 3:
+            #             _send_payment_link_code = sendPaymentLink(from_number)
+            #             _update_user_session_code = update_user_session_number(from_number[2:],4,db)
+            #             if _update_user_session_code and _send_payment_link_code == 200:
+            #                 return True
+            #     elif user_selection["id"] == "PS-2":
+            #         _user_session_number = get_user_session_number(from_number[2:],db)
+            #         if _user_session_number == 3:
+            #             _send_terminate_code = sendConversationTerminateMessage(from_number)
+            #             if _send_terminate_code == 200:
+            #                 _update_user_session_code = update_user_session_number(from_number[2:],0,db)
+            #                 if _update_user_session_code:
+            #                     return True
+            if body["entry"][0]["changes"][0]["value"]["messages"][0]["type"] == "button":
+                if body["entry"][0]["changes"][0]["value"]["messages"][0]["button"]["text"] == "Register Now":
+                    user_session_number = checkUserSessionNumber(from_number[2:],db)
+                    if user_session_number == 0:
+                        _send_form = sendFormLink(from_number)
+                    elif user_session_number == None:
+                        _create_session = createUserSession(from_number[2:])
+                        if _create_session:
+                            _send_form = sendFormLink(from_number)
+            else :
+                print("Invalid!")
                                     
 
    
@@ -132,6 +139,22 @@ def sendWelcomeMessage(to,user):
         "type": "text",
         "text":{
             "body":f"Dear {user.user_first_name}, Welcome to Registration of South ISAR 2024!"
+        }
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()  
+    return response.status_code
+
+def sendFormLink(to):
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to,
+        "type": "text",
+        "text":{
+            "body":f"Please Click the link below to register\n{form_link}\n\n --------\n*Note* : Once you have filled the form and submitted, Please come back to whatsapp to receive a payment link"
         }
     }
     headers = {"Content-Type": "application/json"}
