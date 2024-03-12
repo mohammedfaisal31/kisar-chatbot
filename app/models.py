@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.ext.declarative import declarative_base
-from pydantic import BaseModel
-from typing import Optional
+
 
 Base = declarative_base()
 
@@ -40,18 +39,5 @@ class SessionManager(Base):
 
 
     
-class PaymentWebhookPayload(BaseModel):
-    amount: float
-    buyer: str
-    buyer_name: str
-    buyer_phone: Optional[str] = None
-    currency: str
-    fees: float
-    longurl: str
-    mac: str
-    payment_id: str
-    payment_request_id: str
-    purpose: str
-    shorturl: str
-    status: str
+
     
