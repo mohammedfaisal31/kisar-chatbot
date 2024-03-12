@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import schedule
 import time
 from userUtils import *
-from utils import sendPaymentLink
 from db import get_db
 
 # Load environment variables
