@@ -144,7 +144,7 @@ def sendRegisterTemplate(to):
     payload = {
                 "messaging_product": "whatsapp",
                 "recipient_type": "individual",
-                "to": "919353676794",
+                "to": to,
                 "type": "template",
                 "template": {
                 "name": "south_isar",

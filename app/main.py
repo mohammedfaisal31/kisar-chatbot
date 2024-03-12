@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 from db import *
 from utils import processWhatsAppMessage
+from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
 
@@ -12,7 +13,7 @@ verify_token = os.getenv("VERIFY_TOKEN")
 
 app = FastAPI()
 
-
+app.mount("/template", StaticFiles(directory="./template"), name="template")
 
 @app.post("/webhook")
 async def webhook(request: Request):
