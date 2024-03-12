@@ -292,16 +292,15 @@ def sendTryAgainMessage(to):
     return response
 
 def sendDocument(to,payment_id):
+    print(to)
+    print(f"{host}/pdfs/{payment_id}.pdf")
     payload = {
         "messaging_product": "whatsapp",
         "recipient_type": "individual",
         "to": to,
         "type": "document",
         "document": {
-            "link": f"{host}/pdfs/{payment_id}.pdf",
-            "provider": {
-            "name" : "provider-name"
-        }
+            "link": f"{host}/pdfs/{payment_id}.pdf"
     }
     }
     headers = {"Content-Type": "application/json"}
@@ -414,6 +413,7 @@ def processPayment(data: Dict[str, str]):
     if data["status"] == "Credit":
         buyer_phone = data["buyer_phone"][3:]
         whatsapp_phone = data["buyer_phone"][1:]
+        print(whatsapp_phone)
         _updatePaymentStatus = updateUserPaymentDetails(buyer_phone,data["payment_id"],"SUCCESS",db)
         if _updatePaymentStatus:
             _updatePaymentInSheet = updatePaymentStatusInSheet(buyer_phone,"TRUE")
