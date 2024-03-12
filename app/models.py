@@ -1,6 +1,9 @@
 from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.ext.declarative import declarative_base
+from typing import Annotated
 
+from fastapi import FastAPI, Form
+from pydantic import BaseModel
 
 Base = declarative_base()
 
@@ -36,6 +39,21 @@ class SessionManager(Base):
     id = Column(Integer ,primary_key=True,index=True)
     user_phone = Column(String(10) ,unique=True,index=True)
     session_number = Column(Integer,server_default="0")
+
+class PaymentWebhookPayload(BaseModel):
+    amount: Annotated[float, Form(...)]
+    buyer: Annotated[str, Form(...)]
+    buyer_name: Annotated[str, Form(...)]
+    buyer_phone: Annotated[str, Form(...)]
+    currency: Annotated[str, Form(...)]
+    fees: Annotated[float, Form(...)]
+    longurl: Annotated[str, Form(...)]
+    mac: Annotated[str, Form(...)]
+    payment_id: Annotated[str, Form(...)]
+    payment_request_id: Annotated[str, Form(...)]
+    purpose: Annotated[str, Form(...)]
+    shorturl: Annotated[str, Form(...)]
+    status: Annotated[str, Form(...)]
 
 
     
