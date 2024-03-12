@@ -177,6 +177,7 @@ def sendRegisterTemplate(to):
                 ]
                 }
             }
+    print(f"{host}/template/banner.jpg")
     headers = {"Content-Type": "application/json"}
 
     response = requests.post(url, json=payload, headers=headers)
