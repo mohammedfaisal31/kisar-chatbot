@@ -27,6 +27,7 @@ async def webhook(request: Request):
 @app.post("/payment-webhook")
 async def paymentWebhook(payload: Request):
     data = await payload.form()
+    print(data)
     #result = processPayment(payload)
     return {"message": "Webhook received successfully"}
 
