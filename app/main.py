@@ -6,7 +6,6 @@ import os
 from db import *
 from utils import processWhatsAppMessage,processPayment
 from fastapi.staticfiles import StaticFiles
-from models import PaymentWebhookData
 
 load_dotenv()
 
