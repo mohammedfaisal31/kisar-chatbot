@@ -26,7 +26,7 @@ def checkRegistrationAndSendPaymentLink():
         
         # Update records and call sendPaymentLink
         for i, row in enumerate(data):
-            if row["Payment Link Sent"] != "TRUE":
+            if row["Timestamp"] != "" and row["Payment Link Sent"] != "TRUE" :
                 _package_id = 0
                 if "NR1-1" in row["Select the package"]:
                     _package_id = 1
@@ -51,7 +51,7 @@ def checkRegistrationAndSendPaymentLink():
                     if _send_payment_link_code == 200:
                         _update_session_code = updateUserSession(phone_number,2,db)
                         if _update_session_code:
-                            worksheet.update_cell(i+2, 16, "TRUE")
+                            worksheet.update_cell(i+2, 17, "TRUE")
             
 
                 print(f"Payment link sent and record updated for phone number: {phone_number}")
