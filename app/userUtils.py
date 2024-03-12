@@ -91,3 +91,15 @@ def checkUserSessionNumber(phone,db):
     finally:
         db.close()
 
+def updateUserPaymentDetails(phone,payment_id,payment_status,db):
+    try:
+        user = db.query(User).filter_by(user_phone=phone).one()
+        user.user_payment_id = payment_id
+        user.user_payment_status = payment_status
+        db.commit()
+        return True
+    except NoResultFound:
+        return False
+    finally:
+        db.close()
+

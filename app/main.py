@@ -1,10 +1,12 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException,Form
+from typing import Dict
 import requests
 from dotenv import load_dotenv
 import os
 from db import *
-from utils import processWhatsAppMessage
+from utils import processWhatsAppMessage,processPayment
 from fastapi.staticfiles import StaticFiles
+from models import PaymentWebhookData
 
 load_dotenv()
 
@@ -14,6 +16,8 @@ verify_token = os.getenv("VERIFY_TOKEN")
 app = FastAPI()
 
 app.mount("/template", StaticFiles(directory="./template"), name="template")
+app.mount("/pdfs", StaticFiles(directory="./pdfs"), name="pdfs")
+
 
 @app.post("/webhook")
 async def webhook(request: Request):
@@ -21,6 +25,11 @@ async def webhook(request: Request):
     print(body)
     response = processWhatsAppMessage(body)
     return {"status": "ok"}
+
+@app.post("/payment-webhook")
+async def paymentWebhook(data: Dict[str, str] = Form(...)):
+    result = processPayment(data)
+    return {"message": "Webhook received successfully"}
 
 @app.get("/webhook")
 async def verify_webhook(request: Request):

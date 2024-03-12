@@ -6,6 +6,9 @@ from db import get_db
 from userUtils import *
 from packageUtils import *
 from payment import createPaymentLink
+from updatePaymentStatusInSheet import updatePaymentStatusInSheet
+from typing import Dict
+from qr import generate_pdf_with_qr_and_text
 
 load_dotenv()
 whatsapp_token = os.getenv("WHATSAPP_TOKEN")
@@ -229,6 +232,8 @@ def sendRegisterTemplate(to):
     response.raise_for_status()  
     return response.status_code 
 
+
+
 def sendPackageConfirmMessage(to, selection):
     payload = {
         "messaging_product":"whatsapp",
@@ -286,6 +291,23 @@ def sendTryAgainMessage(to):
     response.raise_for_status()  
     return response
 
+def sendDocument(to,payment_id):
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to,
+        "type": "document",
+        "document": {
+            "link": f"{host}/pdfs/{payment_id}.pdf",
+            "provider": {
+            "name" : "provider-name"
+        }
+    }
+    }
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()  
+    return response.status_code
 
 def send_plans(to):
     packages = get_packages()
@@ -388,3 +410,28 @@ def sendPaymentLink(to):
     response.raise_for_status()  
     return response.status_code
         
+def processPayment(data: Dict[str, str]):
+    if data["status"] == "Credit":
+        buyer_phone = data["buyer_phone"][3:]
+        whatsapp_phone = data["buyer_phone"][1:]
+        _updatePaymentStatus = updateUserPaymentDetails(buyer_phone,data["payment_id"],"SUCESS",db)
+        if _updatePaymentStatus:
+            _updatePaymentInSheet = updatePaymentStatusInSheet(buyer_phone,"TRUE")
+            user = check_if_user_exists(buyer_phone,db)
+            if user:
+                user_middle_name = user.user_middle_name
+                if user_middle_name is None or user_middle_name == "":
+                    user_middle_name = ""
+                if user.user_category == "Delegate":
+                    _gen_pdf = generate_pdf_with_qr_and_text("./template/delegate_500.png", f"./pdfs/{data["payment_id"]}.pdf", data["payment_id"], user.user_honorific,user.user_first_name ,user_middle_name, user.user_last_name,user.user_city,user.user_state_of_practice)
+                    if _gen_pdf:
+                        _send_Doc = sendDocument(whatsapp_phone,data["payment_id"])
+
+                if user.user_category == "Faculty":
+                    _gen_pdf = generate_pdf_with_qr_and_text("./template/faculty_500.png", f"./pdfs/{data["payment_id"]}.pdf", data["payment_id"], user.user_honorific,user.user_first_name ,user_middle_name, user.user_last_name,user.user_city,user.user_state_of_practice)
+                    if _gen_pdf:
+                        _send_Doc = sendDocument(whatsapp_phone,data["payment_id"])
+                    
+            
+
+

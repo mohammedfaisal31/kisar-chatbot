@@ -42,14 +42,11 @@ def checkRegistrationAndSendPaymentLink():
                     _package_id = 6
                 else:
                     _package_id = 0
-                print(_package_id)
                 
                 _created_user = create_user(row["Honorific"],row["First Name"],row["Middle Name"],row["Last Name"],row["Email"],row["Phone number"],row["Category"],_package_id,row["Medical Council Number"],row["City"],row["State"],row["Type Of Visitor"],db)
                 phone_number = row['Phone number']
                 _user_session = checkUserSessionNumber(phone_number,db)
-                print(type(_user_session))
-                print(_user_session)
-                if _created_user:
+                if _created_user and _user_session == 1:
                     _send_payment_link_code = sendPaymentLink("91"+str(phone_number))
                     if _send_payment_link_code == 200:
                         _update_session_code = updateUserSession(phone_number,2,db)
