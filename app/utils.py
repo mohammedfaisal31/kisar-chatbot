@@ -414,7 +414,7 @@ def processPayment(data: Dict[str, str]):
     if data["status"] == "Credit":
         buyer_phone = data["buyer_phone"][3:]
         whatsapp_phone = data["buyer_phone"][1:]
-        _updatePaymentStatus = updateUserPaymentDetails(buyer_phone,data["payment_id"],"SUCESS",db)
+        _updatePaymentStatus = updateUserPaymentDetails(buyer_phone,data["payment_id"],"SUCCESS",db)
         if _updatePaymentStatus:
             _updatePaymentInSheet = updatePaymentStatusInSheet(buyer_phone,"TRUE")
             user = check_if_user_exists(buyer_phone,db)
