@@ -84,7 +84,7 @@ def updateUserSession(phone,session_number,db):
 def checkUserSessionNumber(phone,db):
     try:
         result = db.query(SessionManager).filter_by(user_phone=phone).one()
-        print(result)
+        print(result.session_number)
         return result.session_number
     except NoResultFound:
         return None
