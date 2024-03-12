@@ -6,6 +6,7 @@ import os
 from db import *
 from utils import processWhatsAppMessage,processPayment
 from fastapi.staticfiles import StaticFiles
+from models import PaymentWebhookPayload
 
 load_dotenv()
 
@@ -26,9 +27,9 @@ async def webhook(request: Request):
     return {"status": "ok"}
 
 @app.post("/payment-webhook")
-async def paymentWebhook(data: Request):
-    print(dict(data))
-    result = processPayment(data)
+async def paymentWebhook(payload: PaymentWebhookPayload):
+    print(payload.model_dump())
+    result = processPayment(payload)
     return {"message": "Webhook received successfully"}
 
 @app.get("/webhook")
