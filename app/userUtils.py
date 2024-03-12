@@ -22,16 +22,6 @@ def check_if_user_exists(user_phone, db):
     finally:
         db.close()
 
-def update_user_session_number(user_phone, new_session_number, db):
-    try:
-        user = db.query(User).filter_by(user_phone=user_phone).one()
-        user.user_session_number = new_session_number
-        db.commit()
-        return True
-    except NoResultFound:
-        return False
-    finally:
-        db.close()
 
 def update_user_package_id(user_phone, new_package_id, db):
     try:
@@ -44,7 +34,7 @@ def update_user_package_id(user_phone, new_package_id, db):
     finally:
         db.close()
 
-def create_user(user_honorific, user_first_name, user_middle_name, user_last_name, user_email, user_phone, user_category,  user_package_id, user_med_council_number ,user_state_of_practice, user_type,db):
+def create_user(user_honorific, user_first_name, user_middle_name, user_last_name, user_email, user_phone, user_category,  user_package_id, user_med_council_number ,user_city,user_state_of_practice, user_type,db):
     try:
         new_user = User(user_honorific=user_honorific,
                         user_first_name=user_first_name,
@@ -55,9 +45,9 @@ def create_user(user_honorific, user_first_name, user_middle_name, user_last_nam
                         user_category=user_category,
                         user_package_id=user_package_id,
                         user_med_council_number=user_med_council_number,
+                        user_city=user_city,
                         user_state_of_practice=user_state_of_practice,
                         user_type=user_type
-                        
                         )
         db.add(new_user)
         db.commit()
@@ -76,6 +66,17 @@ def createUserSession(phone,db):
         return True
     except IntegrityError:
         db.rollback()
+        return False 
+    finally:
+        db.close()
+
+def updateUserSession(phone,session_number,db):
+    try:
+        session = db.query(SessionManager).filter_by(user_phone=phone).one()
+        session.session_number = session_number
+        db.commit()
+        return True
+    except NoResultFound:
         return False 
     finally:
         db.close()

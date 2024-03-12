@@ -106,12 +106,34 @@ def processWhatsAppMessage(body):
                     user_session_number = checkUserSessionNumber(from_number[2:],db)
                     if user_session_number == 0:
                         _send_form = sendFormLink(from_number)
+                        if _send_form == 200:
+                            _update_session = updateUserSession(from_number[2:],1,db)
+                            return _update_session
                     elif user_session_number == None:
                         _create_session = createUserSession(from_number[2:],db)
                         if _create_session:
                             _send_form = sendFormLink(from_number)
-            else :
-                print("Invalid!")
+                            if _send_form == 200:
+                                _update_session = updateUserSession(from_number[2:],1,db)
+                                return _update_session
+            if body["entry"][0]["changes"][0]["value"]["messages"][0]["type"] == "text":
+                msg_body = body["entry"][0]["changes"][0]["value"]["messages"][0]["text"]["body"]
+                if msg_body == "Hi" or msg_body == "hi":
+                    user_session_number = checkUserSessionNumber(from_number[2:],db)
+                    if user_session_number == 0:
+                        _send_form = sendFormLink(from_number)
+                        if _send_form == 200:
+                            _update_session = updateUserSession(from_number[2:],1,db)
+                            return _update_session
+                    elif user_session_number == None:
+                        _create_session = createUserSession(from_number[2:],db)
+                        if _create_session:
+                            _send_form = sendFormLink(from_number)
+                            if _send_form == 200:
+                                _update_session = updateUserSession(from_number[2:],1,db)
+                                return _update_session
+
+            
                                     
 
    
