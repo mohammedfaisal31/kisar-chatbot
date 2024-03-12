@@ -422,7 +422,8 @@ def processPayment(data: Dict[str, str]):
                 user_middle_name = user.user_middle_name
                 if user_middle_name is None or user_middle_name == "":
                     user_middle_name = ""
-                pdf_path = f"./pdfs/{data["payment_id"]}.pdf"
+                payment_id = data["payment_id"]
+                pdf_path = f"./pdfs/{payment_id}.pdf"
                 if user.user_category == "Delegate":
                     _gen_pdf = generate_pdf_with_qr_and_text("./template/delegate_500.png", pdf_path, data["payment_id"], user.user_honorific,user.user_first_name ,user_middle_name, user.user_last_name,user.user_city,user.user_state_of_practice)
                     if _gen_pdf:
