@@ -28,7 +28,7 @@ async def webhook(request: Request):
 
 @app.post("/payment-webhook")
 async def paymentWebhook(payload: PaymentWebhookPayload):
-    print(payload.model_dump())
+    print(payload)
     result = processPayment(payload)
     return {"message": "Webhook received successfully"}
 
