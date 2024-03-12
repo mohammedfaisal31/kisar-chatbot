@@ -32,6 +32,7 @@ class Package(Base):
     
 class SessionManager(Base):
     __tablename__ = "sessions"
+    id = Column(Integer ,primary_key=True,index=True)
     user_phone = Column(String(10) ,unique=True,index=True)
     session_number = Column(Integer,server_default="0")
     
