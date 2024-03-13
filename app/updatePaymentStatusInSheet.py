@@ -26,6 +26,7 @@ def updatePaymentStatusInSheet(phone,status):
         # Update records and call sendPaymentLink
         for i, row in enumerate(data):
             if row["Phone number"] == phone:
+                print(row)
                 worksheet.update_cell(i+2, 16, status)
                 print(f"Payment Status record updated for phone number: {phone}")
                 flag = True
