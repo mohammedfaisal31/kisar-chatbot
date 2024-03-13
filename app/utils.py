@@ -346,7 +346,7 @@ def sendPaymentLink(to):
         "to": to,
         "type": "text",
         "text":{
-            "body":f"Please Click the link below to pay\n{paymentLink}\n\n --------\n*Note* : Once the payment is complete, You will receive a receipt/badge here"
+            "body":f"*PAYMENT LINK*:\nPlease Click the link below to pay\n{paymentLink}\n\n --------\n*Note* : Once the payment is complete, You will receive a receipt/badge here"
         }
     }
     headers = {"Content-Type": "application/json"}
