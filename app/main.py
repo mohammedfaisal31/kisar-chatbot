@@ -34,7 +34,7 @@ async def paymentWebhook(payload: Request):
 
 @app.get("/payment-success")
 async def paymentSucess():
-    return FileResponse("paymentSucess.html")
+    return FileResponse("paymentSuccess.html")
 
 @app.get("/webhook")
 async def verify_webhook(request: Request):
