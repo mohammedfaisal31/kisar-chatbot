@@ -156,6 +156,22 @@ def sendConversationTerminateMessage(to):
     response.raise_for_status()  
     return response.status_code
 
+def sendRegisterSucessMessage(to):
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to,
+        "type": "text",
+        "text":{
+            "body":f"*Congratulations!...*Your Registration was successful\nPlease wait while we fetch your receipt"
+        }
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()  
+    return response.status_code
+
 def sendWelcomeMessage(to,user):
     payload = {
         "messaging_product": "whatsapp",
@@ -289,7 +305,7 @@ def sendTryAgainMessage(to):
     headers = {"Content-Type": "application/json"}
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()  
-    return response
+    return response.status_code
 
 def sendDocument(to,payment_id):
     print(to)
@@ -368,7 +384,7 @@ def send_plans(to):
 
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
-    return response
+    return response.status_code
         
 
 def sendPaymentLink(to):
@@ -427,12 +443,26 @@ def processPayment(data: Dict[str, str]):
                 if user.user_category == "Delegate":
                     _gen_pdf = generate_pdf_with_qr_and_text("./template/delegate_500.png", pdf_path, data["payment_id"], user.user_honorific,user.user_first_name ,user_middle_name, user.user_last_name,user.user_city,user.user_state_of_practice)
                     if _gen_pdf:
-                        _send_Doc = sendDocument(whatsapp_phone,data["payment_id"])
+                        _user_session_number = checkUserSessionNumber(buyer_phone,db)
+                        if _user_session_number == 2:
+                            _send_success = sendRegisterSucessMessage(whatsapp_phone)
+                            _send_Doc = sendDocument(whatsapp_phone,data["payment_id"])
+                            if _send_success == 200 and _send_Doc == 200:
+                                _update_user_session = updateUserSession(buyer_phone,3,db)
+                                if _user_session_number:
+                                    return True
 
                 if user.user_category == "Faculty":
                     _gen_pdf = generate_pdf_with_qr_and_text("./template/faculty_500.png", pdf_path, data["payment_id"], user.user_honorific,user.user_first_name ,user_middle_name, user.user_last_name,user.user_city,user.user_state_of_practice)
                     if _gen_pdf:
-                        _send_Doc = sendDocument(whatsapp_phone,data["payment_id"])
+                        _user_session_number = checkUserSessionNumber(buyer_phone,db)
+                        if _user_session_number == 2:
+                            _send_success = sendRegisterSucessMessage(whatsapp_phone)
+                            _send_Doc = sendDocument(whatsapp_phone,data["payment_id"])
+                            if _send_success == 200 and _send_Doc == 200:
+                                _update_user_session = updateUserSession(buyer_phone,3,db)
+                                if _user_session_number:
+                                    return True
                     
             
 
