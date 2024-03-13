@@ -12,7 +12,7 @@ class User(Base):
     user_last_name = Column(String(100), index=True)
     user_email = Column(String(255), nullable=False)
     user_phone = Column(String(10), unique=True, nullable=False)
-    user_med_council_number = Column(String(14), unique=True, nullable=False)  
+    user_med_council_number = Column(String(14), nullable=False)  
     user_category = Column(Enum("Delegate", "Faculty"), nullable=False)
     user_type = Column(String(100), nullable=False)
     user_package_id = Column(Integer,nullable=True)

@@ -119,6 +119,10 @@ def processWhatsAppMessage(body):
                             if _send_form == 200:
                                 _update_session = updateUserSession(from_number[2:],1,db)
                                 return _update_session
+                    elif user_session_number == 3:
+                        _send_already_registered = sendAlreadyRegisteredMessage(from_number)
+                        if _send_already_registered == 200:
+                            return True
             if body["entry"][0]["changes"][0]["value"]["messages"][0]["type"] == "text":
                 msg_body = body["entry"][0]["changes"][0]["value"]["messages"][0]["text"]["body"]
                 if msg_body == "Hi" or msg_body == "hi":
@@ -135,6 +139,16 @@ def processWhatsAppMessage(body):
                             if _send_form == 200:
                                 _update_session = updateUserSession(from_number[2:],1,db)
                                 return _update_session
+                    elif user_session_number == 3:
+                        _send_already_registered = sendAlreadyRegisteredMessage(from_number)
+                        if _send_already_registered == 200:
+                            return True
+                if msg_body == "Cancel" or msg_body == "cancel" or msg_body == "CANCEL":
+                    user_session_number = checkUserSessionNumber(from_number[2:],db)
+                    if user_session_number > 0 and user_session_number < 3:
+                        _send_terminate = sendConversationTerminateMessage(from_number)
+                        if _send_terminate:
+                            _update_session = updateUserSession(from_number[2:],0,db)
 
             
                                     
@@ -156,6 +170,22 @@ def sendConversationTerminateMessage(to):
     response.raise_for_status()  
     return response.status_code
 
+def sendAlreadyRegisteredMessage(to):
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to,
+        "type": "text",
+        "text":{
+            "body":f"You are already registered!"
+        }
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()  
+    return response.status_code
+
 def sendRegisterSucessMessage(to):
     payload = {
         "messaging_product": "whatsapp",
@@ -163,7 +193,7 @@ def sendRegisterSucessMessage(to):
         "to": to,
         "type": "text",
         "text":{
-            "body":f"*Congratulations!...*Your Registration was successful\nPlease wait while we fetch your receipt"
+            "body":f"*Congratulations*!...\nYour Registration was successful\nPlease wait while we fetch your receipt"
         }
     }
     headers = {"Content-Type": "application/json"}
@@ -250,47 +280,7 @@ def sendRegisterTemplate(to):
 
 
 
-def sendPackageConfirmMessage(to, selection):
-    payload = {
-        "messaging_product":"whatsapp",
-        "recipient_type": "individual",
-        "to": to,
-        "type": "interactive",
-        "interactive": {
-            "type": "button",
-            "header": {
-                "type": "text",
-                "text": "Please confirm"
-            },
-            "body":{
-                "text":f"Would you like to confirm your selection?\n {selection}"
-            },
-            "action": {
-                "buttons": [
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "PS-1",
-                            "title": "Yes" 
-                        }
-                    },
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "PS-2",
-                            "title": "No" 
-                        }
-                    }
-                ]
-                
-            }
-        }
-    }
-    headers = {"Content-Type": "application/json"}
 
-    response = requests.post(url, json=payload, headers=headers)
-    response.raise_for_status()  
-    return response.status_code
 
 def sendTryAgainMessage(to):
     payload = {
@@ -324,67 +314,7 @@ def sendDocument(to,payment_id):
     response.raise_for_status()  
     return response.status_code
 
-def send_plans(to):
-    packages = get_packages()
-    sections = [{"title":"Non-Residential Packages","rows":[]},{"title":"Residential Packages","rows":[]},]
-    for package in packages:
-        
-        if package.package_id == 1:
-            row = {
-                        "id": package.package_id,
-                        "title": f"{package.package_title} ",
-                        "description": f"Price : ₹{package.package_price}/-"
-                    }
-                
-            sections[0]["rows"].append(row)
-        elif package.package_id == 2:
-            row = {
-                        "id": package.package_id,
-                        "title": f"{package.package_title} ",
-                        "description": f"₹14000 + Accompanying person(₹12000) Total: ₹{package.package_price}/-"
-                    }
-                
-                
-            sections[0]["rows"].append(row)
-        else:
-            row = {
-                    "id": package.package_id,
-                    "title": f"{package.package_occupancy} Occupancy ",
-                    "description": f" {package.package_duration} package : ₹{package.package_price}/-"
-                }
-            sections[1]["rows"].append(row)
-        
-        
-            
 
-    payload = {
-        "messaging_product": "whatsapp",
-        "recipient_type": "individual",
-        "to": to,
-        "type": "interactive",
-        "interactive": {
-            "type": "list",
-            "header": {
-                "type": "text",
-                "text": "Choose a package:"
-            },
-            "body": {
-                "text": "Please select a package from the list below"
-            },
-            "footer": {
-                "text": "Select a package from the list."
-            },
-            "action": {
-                "button": "Select",
-                "sections": sections
-            }
-        }
-    }
-    headers = {"Content-Type": "application/json"}
-
-    response = requests.post(url, json=payload, headers=headers)
-    response.raise_for_status()
-    return response.status_code
         
 
 def sendPaymentLink(to):
@@ -463,7 +393,119 @@ def processPayment(data: Dict[str, str]):
                                 _update_user_session = updateUserSession(buyer_phone,3,db)
                                 if _user_session_number:
                                     return True
+    else:
+        buyer_phone = data["buyer_phone"][3:]
+        whatsapp_phone = data["buyer_phone"][1:]
+        _updatePaymentStatus = updateUserPaymentDetails(buyer_phone,data["payment_id"],"FAILED",db)
+        if _updatePaymentStatus:
+            _update_user_session = updateUserSession(buyer_phone,0,db)
+            if _update_user_session:
+                return True
+
                     
             
 
 
+def send_plans(to):
+    packages = get_packages()
+    sections = [{"title":"Non-Residential Packages","rows":[]},{"title":"Residential Packages","rows":[]},]
+    for package in packages:
+        
+        if package.package_id == 1:
+            row = {
+                        "id": package.package_id,
+                        "title": f"{package.package_title} ",
+                        "description": f"Price : ₹{package.package_price}/-"
+                    }
+                
+            sections[0]["rows"].append(row)
+        elif package.package_id == 2:
+            row = {
+                        "id": package.package_id,
+                        "title": f"{package.package_title} ",
+                        "description": f"₹14000 + Accompanying person(₹12000) Total: ₹{package.package_price}/-"
+                    }
+                
+                
+            sections[0]["rows"].append(row)
+        else:
+            row = {
+                    "id": package.package_id,
+                    "title": f"{package.package_occupancy} Occupancy ",
+                    "description": f" {package.package_duration} package : ₹{package.package_price}/-"
+                }
+            sections[1]["rows"].append(row)
+        
+        
+            
+
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to,
+        "type": "interactive",
+        "interactive": {
+            "type": "list",
+            "header": {
+                "type": "text",
+                "text": "Choose a package:"
+            },
+            "body": {
+                "text": "Please select a package from the list below"
+            },
+            "footer": {
+                "text": "Select a package from the list."
+            },
+            "action": {
+                "button": "Select",
+                "sections": sections
+            }
+        }
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()
+    return response.status_code
+
+def sendPackageConfirmMessage(to, selection):
+    payload = {
+        "messaging_product":"whatsapp",
+        "recipient_type": "individual",
+        "to": to,
+        "type": "interactive",
+        "interactive": {
+            "type": "button",
+            "header": {
+                "type": "text",
+                "text": "Please confirm"
+            },
+            "body":{
+                "text":f"Would you like to confirm your selection?\n {selection}"
+            },
+            "action": {
+                "buttons": [
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "PS-1",
+                            "title": "Yes" 
+                        }
+                    },
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "PS-2",
+                            "title": "No" 
+                        }
+                    }
+                ]
+                
+            }
+        }
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()  
+    return response.status_code
