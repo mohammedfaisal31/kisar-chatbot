@@ -241,7 +241,7 @@ def sendRegisterTemplate(to):
                 "to": to,
                 "type": "template",
                 "template": {
-                "name": "south_isar",
+                "name": "south_isar_template",
                 "language": {
                     "code": "en"
                 },
