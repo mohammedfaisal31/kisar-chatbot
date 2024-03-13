@@ -6,6 +6,7 @@ import os
 from db import *
 from utils import processWhatsAppMessage,processPayment
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 load_dotenv()
 
 
@@ -30,6 +31,10 @@ async def paymentWebhook(payload: Request):
     #print(data["amount"])
     result = processPayment(data)
     return {"message": "Webhook received successfully"}
+
+@app.get("/payment-sucess")
+async def paymentSucess():
+    return FileResponse("paymentSucess.html")
 
 @app.get("/webhook")
 async def verify_webhook(request: Request):
