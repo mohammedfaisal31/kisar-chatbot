@@ -1,3 +1,4 @@
 from utils import sendRegisterTemplate
-
-sendRegisterTemplate("919353676794")
+import sys
+number = sys.argv[1]
+sendRegisterTemplate(number)
