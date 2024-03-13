@@ -9,12 +9,12 @@ HOST=os.getenv("HOST")
 from instamojo_wrapper import Instamojo
 
 #Production
-# api = Instamojo(api_key=API_KEY,
-#                 auth_token=AUTH_TOKEN)
+api = Instamojo(api_key=API_KEY,
+                auth_token=AUTH_TOKEN)
 
 #Sanbox
-api = Instamojo(api_key=API_KEY,
-                auth_token=AUTH_TOKEN,endpoint='https://test.instamojo.com/api/1.1/')
+# api = Instamojo(api_key=API_KEY,
+#                 auth_token=AUTH_TOKEN,endpoint='https://test.instamojo.com/api/1.1/')
 
 def createPaymentLink(paymentDetails):
     response = api.payment_request_create(
