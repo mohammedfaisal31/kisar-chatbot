@@ -32,7 +32,7 @@ async def paymentWebhook(payload: Request):
     result = processPayment(data)
     return {"message": "Webhook received successfully"}
 
-@app.get("/payment-sucess")
+@app.get("/payment-success")
 async def paymentSucess():
     return FileResponse("paymentSucess.html")
 
