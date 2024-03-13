@@ -1,3 +1,3 @@
 from utils import sendRegisterTemplate
 
-sendRegisterTemplate("919353676794")
+sendRegisterTemplate("919945285399")
