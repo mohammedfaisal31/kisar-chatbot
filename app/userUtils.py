@@ -52,7 +52,8 @@ def create_user(user_honorific, user_first_name, user_middle_name, user_last_nam
         db.add(new_user)
         db.commit()
         return True
-    except IntegrityError:
+    except IntegrityError as e:
+        print(e)
         db.rollback()
         return False  
     finally:
@@ -84,7 +85,6 @@ def updateUserSession(phone,session_number,db):
 def checkUserSessionNumber(phone,db):
     try:
         result = db.query(SessionManager).filter_by(user_phone=phone).one()
-        print(result.session_number)
         return result.session_number
     except NoResultFound:
         return None
