@@ -71,6 +71,18 @@ def createUserSession(phone,db):
     finally:
         db.close()
 
+def createCustomUserSession(phone,session_number,db):
+    try:
+        new_session = SessionManager(user_phone=phone,session_number=session_number)
+        db.add(new_session)
+        db.commit()
+        return True
+    except IntegrityError:
+        db.rollback()
+        return False 
+    finally:
+        db.close()
+
 def updateUserSession(phone,session_number,db):
     try:
         session = db.query(SessionManager).filter_by(user_phone=phone).one()

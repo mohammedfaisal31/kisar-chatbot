@@ -30,19 +30,28 @@ def sendCampaignToState(state):
         progress_bar = tqdm(total=len(data), desc="Processing items")
         for i, row in enumerate(data):
             if len(str(row["Mobile1"])) == 10:
-                sendRegisterTemplate("91"+str(row["Mobile1"]))
+                try:
+                    sendRegisterTemplate("91"+str(row["Mobile1"]))
+                except:
+                    print(f"ERROR for {row["Mobile1"]}")
                 shoot = 0
                 if row["messages_sent"] != "":
                     shoot = row["messages_sent"] + 1
                 sub_sheet.update_cell(i+2,6,shoot)
             if len(str(row["Mobile2"])) == 10:
-                sendRegisterTemplate("91"+str(row["Mobile2"]))
+                try:
+                    sendRegisterTemplate("91"+str(row["Mobile2"]))
+                except:
+                    print(f"ERROR for {row["Mobile2"]}")
                 shoot = 0
                 if row["messages_sent"] != "":
                     shoot = row["messages_sent"] + 1
                 sub_sheet.update_cell(i+2,6,shoot)
             if len(str(row["Mobile3"])) == 10:
-                sendRegisterTemplate("91"+str(row["Mobile3"]))
+                try:
+                    sendRegisterTemplate("91"+str(row["Mobile3"]))
+                except:
+                    print(f"ERROR for {row["Mobile3"]}")
                 shoot = 0
                 if row["messages_sent"] != "":
                     shoot = row["messages_sent"] + 1
