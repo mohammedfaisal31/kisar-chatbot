@@ -5,6 +5,7 @@ load_dotenv()
 
 API_KEY=os.getenv("INSTAMOJO_KEY")
 AUTH_TOKEN=os.getenv("INSTAMOJO_AUTH_TOKEN")
+
 HOST=os.getenv("HOST")
 ENV=os.getenv("ENVIRONMENT")
 from instamojo_wrapper import Instamojo
@@ -16,6 +17,8 @@ api = Instamojo(api_key=API_KEY,
 
 #Sanbox
 if ENV == "dev":
+    API_KEY=os.getenv("INSTAMOJO_TEST_KEY")
+    AUTH_TOKEN=os.getenv("INSTAMOJO_TEST_AUTH_TOKEN")
     api = Instamojo(api_key=API_KEY,
                 auth_token=AUTH_TOKEN,endpoint='https://test.instamojo.com/api/1.1/')
 
