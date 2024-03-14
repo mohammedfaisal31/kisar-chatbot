@@ -7,10 +7,15 @@ from models import Base
 
 load_dotenv()
 
+
+ENV=os.getenv("ENVIRONMENT")
 host = os.getenv("DB_HOST")
 user = os.getenv("DB_USER")
 password = os.getenv("DB_PASSWORD")
 database = os.getenv("DB_NAME")
+
+if ENV == "dev":
+    database = os.getenv("TEST_DB_NAME")
 
 # MySQL Connector connection string
 connection_string = f"mysql+mysqlconnector://{user}:{password}@{host}/{database}"

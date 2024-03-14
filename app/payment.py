@@ -6,15 +6,18 @@ load_dotenv()
 API_KEY=os.getenv("INSTAMOJO_KEY")
 AUTH_TOKEN=os.getenv("INSTAMOJO_AUTH_TOKEN")
 HOST=os.getenv("HOST")
+ENV=os.getenv("ENVIRONMENT")
 from instamojo_wrapper import Instamojo
+
 
 #Production
 api = Instamojo(api_key=API_KEY,
                 auth_token=AUTH_TOKEN)
 
 #Sanbox
-# api = Instamojo(api_key=API_KEY,
-#                 auth_token=AUTH_TOKEN,endpoint='https://test.instamojo.com/api/1.1/')
+if ENV == "dev":
+    api = Instamojo(api_key=API_KEY,
+                auth_token=AUTH_TOKEN,endpoint='https://test.instamojo.com/api/1.1/')
 
 def createPaymentLink(paymentDetails):
     response = api.payment_request_create(
