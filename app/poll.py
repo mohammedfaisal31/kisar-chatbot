@@ -56,8 +56,8 @@ def checkRegistrationAndSendPaymentLink():
                             _created_user = create_user(row["Honorific"],row["First Name"],row["Middle Name"],row["Last Name"],row["Email"],row["Phone number"],row["Category"],_package_id,row["Medical Council Number"],row["City"],row["State"],row["Type Of Visitor"],db)
                             if _created_user:
                                 print(f"User created")
-                    except:
-                        print(f"UNKOWN ERROR")
+                    except Exception as e:
+                        print(f"Error {e}")
                 if _user_session == None:
                     try:
                         _send_payment_link_code = sendPaymentLink("91"+str(phone_number))
@@ -69,8 +69,8 @@ def checkRegistrationAndSendPaymentLink():
                             _created_user = create_user(row["Honorific"],row["First Name"],row["Middle Name"],row["Last Name"],row["Email"],row["Phone number"],row["Category"],_package_id,row["Medical Council Number"],row["City"],row["State"],row["Type Of Visitor"],db)
                             if _created_user:
                                 print(f"User created")
-                    except e:
-                        print(f"{e}")
+                    except Exception as e:
+                        print(f"Error {e}")
 
 
     except Exception as e:
