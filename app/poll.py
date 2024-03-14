@@ -43,23 +43,34 @@ def checkRegistrationAndSendPaymentLink():
                 else:
                     _package_id = 0
                 
-                _created_user = create_user(row["Honorific"],row["First Name"],row["Middle Name"],row["Last Name"],row["Email"],row["Phone number"],row["Category"],_package_id,row["Medical Council Number"],row["City"],row["State"],row["Type Of Visitor"],db)
                 phone_number = row['Phone number']
                 _user_session = checkUserSessionNumber(phone_number,db)
-                if _created_user and _user_session == 1:
-                    _send_payment_link_code = sendPaymentLink("91"+str(phone_number))
-                    if _send_payment_link_code == 200:
-                        _update_session_code = updateUserSession(phone_number,2,db)
-                        if _update_session_code:
-                            worksheet.update_cell(i+2, 17, "TRUE")
-                            print(f"Payment link sent and record updated for phone number: {phone_number}")
-                if _created_user and _user_session == None:
-                    _send_payment_link_code = sendPaymentLink("91"+str(phone_number))
-                    if _send_payment_link_code == 200:
-                        _update_session_code = createCustomUserSession(phone_number,2,db)
-                        if _update_session_code:
-                            worksheet.update_cell(i+2, 17, "TRUE")
-                            print(f"Payment link sent and record updated for phone number: {phone_number}")
+                if _user_session == 1:
+                    try:
+                        _send_payment_link_code = sendPaymentLink("91"+str(phone_number))
+                        if _send_payment_link_code == 200:
+                            _update_session_code = updateUserSession(phone_number,2,db)
+                            if _update_session_code:
+                                worksheet.update_cell(i+2, 17, "TRUE")
+                                print(f"Payment link sent and record updated for phone number: {phone_number}")
+                            _created_user = create_user(row["Honorific"],row["First Name"],row["Middle Name"],row["Last Name"],row["Email"],row["Phone number"],row["Category"],_package_id,row["Medical Council Number"],row["City"],row["State"],row["Type Of Visitor"],db)
+                            if _created_user:
+                                print(f"User created")
+                    except e:
+                        print(f"{e}")
+                if _user_session == None:
+                    try:
+                        _send_payment_link_code = sendPaymentLink("91"+str(phone_number))
+                        if _send_payment_link_code == 200:
+                            _update_session_code = createCustomUserSession(phone_number,2,db)
+                            if _update_session_code:
+                                worksheet.update_cell(i+2, 17, "TRUE")
+                                print(f"Payment link sent and record updated for phone number: {phone_number}")
+                            _created_user = create_user(row["Honorific"],row["First Name"],row["Middle Name"],row["Last Name"],row["Email"],row["Phone number"],row["Category"],_package_id,row["Medical Council Number"],row["City"],row["State"],row["Type Of Visitor"],db)
+                            if _created_user:
+                                print(f"User created")
+                    except e:
+                        print(f"{e}")
 
 
     except Exception as e:
