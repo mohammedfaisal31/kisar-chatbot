@@ -24,7 +24,8 @@ if ENV == "dev":
 
 def createPaymentLink(paymentDetails):
     response = api.payment_request_create(
-        amount=paymentDetails["amount"],
+        #amount=paymentDetails["amount"],
+        amount=10,
         purpose=paymentDetails["purpose"],
         send_email=True,
         buyer_name=paymentDetails["buyer_name"],
