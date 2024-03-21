@@ -476,9 +476,8 @@ def processPayment(data: Dict[str, str]):
                     if _gen_pdf:
                         _user_session_number = checkUserSessionNumber(buyer_phone,db)
                         if _user_session_number == 2:
-                            _send_success = sendRegisterSucessMessage(whatsapp_phone)
                             _send_Doc = sendDocumentTemplate(whatsapp_phone,data["payment_id"])
-                            if _send_success == 200 and _send_Doc == 200:
+                            if _send_Doc == 200:
                                 _update_user_session = updateUserSession(buyer_phone,3,db)
                                 if _user_session_number:
                                     return True
@@ -488,9 +487,8 @@ def processPayment(data: Dict[str, str]):
                     if _gen_pdf:
                         _user_session_number = checkUserSessionNumber(buyer_phone,db)
                         if _user_session_number == 2:
-                            _send_success = sendRegisterSucessMessage(whatsapp_phone)
                             _send_Doc = sendDocumentTemplate(whatsapp_phone,data["payment_id"])
-                            if _send_success == 200 and _send_Doc == 200:
+                            if _send_Doc == 200:
                                 _update_user_session = updateUserSession(buyer_phone,3,db)
                                 if _user_session_number:
                                     return True
