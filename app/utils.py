@@ -334,8 +334,89 @@ def sendDocument(to,payment_id):
     response.raise_for_status()  
     return response.status_code
 
+def sendDocumentTemplate(to,payment_id):
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to,
+        "type": "template",
+        "template": {
+        "name": "badge_pdf",
+        "language": {
+            "code": "en"
+        },
+        "components": [
+            {
+            "type": "header",
+            "parameters": [
+                {
+                "type": "document",
+                "document": {
+                    "link": f"{host}/pdfs/{payment_id}.pdf"
+                }
+                }
+            ]
+            }
+        ]
+        }
+    }
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()  
+    return response.status_code
 
-        
+
+def sendPaymentLinkTemplate(to):
+    user = check_if_user_exists(to[2:],db)
+    paymentDetails = {}
+    if user != None:
+        package = get_package_by_id(user.user_package_id)
+        paymentDetails["amount"] = package.package_price
+        paymentDetails["buyer_name"] = f"{user.user_honorific}.{user.user_first_name} {user.user_last_name}"
+        if package.package_id == 1:
+            paymentDetails["purpose"] =  f"{package.package_title}"
+
+        elif package.package_id == 2:
+            paymentDetails["purpose"] = f"{package.package_title} + Accompanying person"
+                    
+        else:
+            paymentDetails["purpose"] = f"{package.package_title} {package.package_occupancy} Occupancy {package.package_duration} package "
+        paymentDetails["phone"] = user.user_phone 
+        paymentDetails["email"] = user.user_email
+
+    _create_payment_link_response = createPaymentLink(paymentDetails)
+    paymentLink = ""
+    if _create_payment_link_response:
+        paymentLink = _create_payment_link_response["payment_request"]["longurl"]
+    
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to,
+        "type": "template",
+        "template": {
+        "name": "kisar_payment_link",
+        "language": {
+            "code": "en"
+        },
+        "components": [
+            {
+            "type": "body",
+            "parameters": [
+                {
+                "type": "text",
+                "text": paymentLink
+                }
+            ]
+            }
+        ]
+        }
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()  
+    return response.status_code
 
 def sendPaymentLink(to):
     user = check_if_user_exists(to[2:],db)
@@ -396,7 +477,7 @@ def processPayment(data: Dict[str, str]):
                         _user_session_number = checkUserSessionNumber(buyer_phone,db)
                         if _user_session_number == 2:
                             _send_success = sendRegisterSucessMessage(whatsapp_phone)
-                            _send_Doc = sendDocument(whatsapp_phone,data["payment_id"])
+                            _send_Doc = sendDocumentTemplate(whatsapp_phone,data["payment_id"])
                             if _send_success == 200 and _send_Doc == 200:
                                 _update_user_session = updateUserSession(buyer_phone,3,db)
                                 if _user_session_number:
@@ -408,7 +489,7 @@ def processPayment(data: Dict[str, str]):
                         _user_session_number = checkUserSessionNumber(buyer_phone,db)
                         if _user_session_number == 2:
                             _send_success = sendRegisterSucessMessage(whatsapp_phone)
-                            _send_Doc = sendDocument(whatsapp_phone,data["payment_id"])
+                            _send_Doc = sendDocumentTemplate(whatsapp_phone,data["payment_id"])
                             if _send_success == 200 and _send_Doc == 200:
                                 _update_user_session = updateUserSession(buyer_phone,3,db)
                                 if _user_session_number:

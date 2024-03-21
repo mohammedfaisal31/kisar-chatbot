@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import schedule
 import time
 from userUtils import *
-from utils import sendPaymentLink
+from utils import sendPaymentLinkTemplate
 from db import get_db
 
 # Load environment variables
@@ -52,7 +52,7 @@ def checkRegistrationAndSendPaymentLink():
 
                     if _user_session == 1:
                         try:
-                            _send_payment_link_code = sendPaymentLink("91"+str(phone_number))
+                            _send_payment_link_code = sendPaymentLinkTemplate("91"+str(phone_number))
                             if _send_payment_link_code == 200:
                                 _update_session_code = updateUserSession(phone_number,2,db)
                                 if _update_session_code:
@@ -62,7 +62,7 @@ def checkRegistrationAndSendPaymentLink():
                             print(f"Error {e}")
                     if _user_session == None:
                         try:
-                            _send_payment_link_code = sendPaymentLink("91"+str(phone_number))
+                            _send_payment_link_code = sendPaymentLinkTemplate("91"+str(phone_number))
                             if _send_payment_link_code == 200:
                                 _update_session_code = createCustomUserSession(phone_number,2,db)
                                 if _update_session_code:
