@@ -112,6 +112,13 @@ def processWhatsAppMessage(body):
                         if _send_form == 200:
                             _update_session = updateUserSession(from_number[2:],1,db)
                             return _update_session
+                    elif user_session_number == 1:
+                        _continue_msg = sendContinueMessage(from_number)
+                        _send_form = sendFormLink(from_number)
+                        if _send_form == 200 and _continue_msg == 200:
+                                _update_session = updateUserSession(from_number[2:],1,db)
+                                return _update_session
+                    
                     elif user_session_number == None:
                         _create_session = createUserSession(from_number[2:],db)
                         if _create_session:
@@ -151,8 +158,21 @@ def processWhatsAppMessage(body):
                             _update_session = updateUserSession(from_number[2:],0,db)
 
             
-                                    
+def sendContinueMessage(to):
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to,
+        "type": "text",
+        "text":{
+            "body":f"Continue from you where you left!"
+        }
+    }
+    headers = {"Content-Type": "application/json"}
 
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()  
+    return response.status_code
    
 def sendConversationTerminateMessage(to):
     payload = {
