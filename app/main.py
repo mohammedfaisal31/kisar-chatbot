@@ -44,6 +44,11 @@ async def verify_webhook(request: Request):
     else:
         raise HTTPException(status_code=403, detail="Invalid token")
 
+@app.get("/hello")
+async def hello():
+    return {"status":"hello"}
+
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="77.37.44.233", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

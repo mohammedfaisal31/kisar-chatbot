@@ -23,7 +23,7 @@ def checkRegistrationAndSendPaymentLink():
     try:
         # Filter data based on conditions
         data = worksheet.get_all_records()
-        
+        print(data)        
         # Update records and call sendPaymentLink
         for i, row in enumerate(data):
             if row["Timestamp"] != "" and row["Payment Link Sent"] != "TRUE" :
