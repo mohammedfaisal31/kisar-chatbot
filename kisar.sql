@@ -1,0 +1,125 @@
+-- MySQL dump 10.13  Distrib 8.0.36, for Linux (x86_64)
+--
+-- Host: localhost    Database: kisar
+-- ------------------------------------------------------
+-- Server version	8.0.36-0ubuntu0.22.04.1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `packages`
+--
+
+DROP TABLE IF EXISTS `packages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `packages` (
+  `package_id` int NOT NULL AUTO_INCREMENT,
+  `package_title` varchar(100) NOT NULL,
+  `package_price` int NOT NULL,
+  `package_occupancy` enum('Single','Double') NOT NULL,
+  `package_duration` enum('One-day','Two-day','Non-Residential') NOT NULL DEFAULT 'Non-Residential',
+  PRIMARY KEY (`package_id`),
+  KEY `ix_packages_package_id` (`package_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `packages`
+--
+
+LOCK TABLES `packages` WRITE;
+/*!40000 ALTER TABLE `packages` DISABLE KEYS */;
+INSERT INTO `packages` VALUES (1,'Non-Residential Package',14000,'Single','Non-Residential'),(2,'Non-Residential Package',26000,'Double','Non-Residential'),(3,'Residential Package',27000,'Single','One-day'),(4,'Residential Package',39000,'Single','Two-day'),(5,'Residential Package',23000,'Double','One-day'),(6,'Residential Package',31000,'Double','Two-day');
+/*!40000 ALTER TABLE `packages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `sessions`
+--
+
+DROP TABLE IF EXISTS `sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sessions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_phone` varchar(10) DEFAULT NULL,
+  `session_number` int DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ix_sessions_user_phone` (`user_phone`),
+  KEY `ix_sessions_id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=297 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `sessions`
+--
+
+LOCK TABLES `sessions` WRITE;
+/*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
+INSERT INTO `sessions` VALUES (1,'9053676790',0),(2,'9880996866',1),(3,'7337818604',1),(4,'9592094404',1),(5,'9008187444',1),(6,'9448854789',2),(7,'8746904515',1),(8,'9790745648',1),(9,'9448420369',1),(10,'9035006572',1),(11,'7077865785',1),(12,'9958897899',1),(13,'7619491890',1),(14,'9449693610',1),(15,'9845267995',1),(16,'9848397087',1),(17,'9900145454',1),(18,'9916808649',1),(19,'8903881671',1),(20,'9538755459',1),(21,'9844167067',1),(22,'9972199092',1),(23,'7075577189',1),(24,'9160291481',1),(25,'9966001225',1),(26,'9488073773',1),(27,'8861531170',1),(28,'9745512200',1),(29,'6238473993',1),(30,'7034656630',1),(31,'9845279930',1),(32,'8985544842',1),(33,'9490888334',1),(34,'7578933673',1),(35,'8939226070',1),(36,'9440711233',1),(37,'7338641546',1),(38,'9497639220',1),(39,'8008409919',1),(40,'9849104471',1),(41,'9849122183',1),(42,'9947968073',1),(43,'9866068929',1),(44,'9901850006',1),(45,'8970275705',1),(46,'9847033527',1),(47,'9847113856',1),(48,'9842127140',1),(49,'9677005047',1),(50,'9840090999',1),(51,'9447022933',1),(52,'9441574475',2),(53,'8547823088',1),(54,'9443725533',1),(55,'9600553264',1),(56,'9618977054',1),(57,'7708922999',1),(58,'9443261086',1),(59,'9282117772',1),(60,'9443385434',1),(61,'8547608521',1),(62,'8374450049',1),(63,'9496301234',1),(64,'9866102977',1),(65,'9976315554',1),(66,'9900075370',1),(67,'9483427392',1),(68,'9840342489',1),(69,'9442018220',1),(70,'9842838481',2),(71,'9994493882',1),(72,'9846611338',1),(73,'8903501455',1),(74,'9790868456',1),(75,'9715950999',1),(76,'9788067880',1),(77,'9633692731',1),(78,'9446218717',1),(79,'9003702020',1),(80,'9841141310',1),(81,'8811090582',1),(82,'9940965099',1),(83,'7799883696',1),(84,'9514480222',1),(85,'7598461660',1),(86,'9885245604',1),(87,'9731846425',3),(88,'9842925755',1),(89,'9841107605',1),(90,'9655414387',1),(91,'9959764502',1),(92,'9400550805',1),(93,'9493202563',1),(94,'9849280082',1),(95,'9930101247',1),(96,'8903569777',1),(97,'9989394051',1),(98,'9787729205',1),(99,'8970079620',1),(100,'9037139122',1),(101,'9840225073',1),(102,'8610161443',1),(103,'9513151099',1),(104,'9908194434',1),(105,'9848054074',1),(106,'7042840934',1),(107,'9841031131',1),(108,'9901052350',1),(109,'8095393777',1),(110,'9945645386',1),(111,'9895983376',1),(112,'9481959680',1),(113,'8754215001',1),(114,'9894506659',1),(115,'9842411033',1),(116,'7025575525',1),(117,'8197827789',1),(118,'9000383613',1),(119,'9840208377',1),(120,'9047022320',1),(121,'9686793505',1),(122,'8098996333',1),(123,'9600140330',1),(124,'9886271919',2),(125,'9884033201',1),(126,'9842776090',1),(127,'9994609707',1),(128,'9786100311',1),(129,'9842146264',1),(133,'9449539365',1),(134,'9113005991',1),(135,'9715632275',1),(136,'9900142124',1),(137,'9490483424',1),(138,'9659656300',1),(139,'9786445511',1),(140,'7337216972',1),(141,'9842432058',1),(142,'9986584697',1),(143,'9492431658',1),(144,'9686275451',1),(145,'9848378214',1),(146,'9820132585',1),(147,'9825404093',1),(148,'9416549777',1),(149,'7879764888',1),(150,'9418159410',1),(151,'9433134587',1),(152,'9312992200',1),(153,'9830350093',1),(154,'9972391746',1),(155,'9837254554',1),(156,'9804700088',1),(157,'9428303365',1),(158,'8888551021',1),(159,'9437960744',1),(160,'9488818644',2),(161,'9302104362',1),(162,'9461334844',1),(163,'8004904523',1),(164,'9820299986',1),(165,'9837153035',1),(166,'9468569933',1),(167,'7509182195',1),(168,'9830133369',1),(169,'9665481664',1),(170,'9762767224',1),(171,'9960707006',1),(172,'9819291946',1),(173,'8638050938',1),(174,'9899061237',1),(175,'9316563001',1),(176,'9955268695',1),(177,'9899429468',1),(178,'7903838857',1),(179,'9830949130',1),(180,'9893937179',1),(181,'8376841107',1),(182,'9420490804',1),(183,'9728066699',1),(184,'7980364276',1),(185,'9439124073',1),(186,'8763849585',1),(187,'9830387661',1),(188,'8149747473',1),(189,'7506176246',1),(190,'9825556232',1),(191,'8928754876',1),(192,'9724077300',1),(193,'9432326356',1),(194,'9733836986',1),(195,'8224014666',1),(196,'7738297543',1),(197,'9549500137',1),(198,'9592048542',1),(199,'9372390988',1),(200,'9337419902',1),(201,'8878352096',1),(202,'9822293525',1),(203,'9454599173',1),(204,'9950996185',1),(205,'7574858084',1),(206,'9831656036',1),(207,'7350409807',1),(208,'9890341931',1),(209,'9417039039',1),(210,'8806495604',1),(211,'9983149703',1),(212,'9923030375',1),(213,'9708155734',1),(214,'9423395787',1),(215,'9874956374',1),(216,'9003145547',1),(217,'9816387536',1),(218,'9888238806',1),(219,'7588221130',1),(220,'9825042772',1),(221,'9432371461',1),(222,'9403566666',1),(223,'9888177711',1),(224,'9850726229',1),(225,'9881284499',1),(226,'9422701344',1),(227,'9667914646',1),(228,'9985692141',1),(229,'9386148341',1),(230,'9430526152',1),(231,'9681093544',1),(232,'9611610048',1),(233,'9177370860',1),(234,'9849868701',1),(235,'9643191317',1),(236,'7837111421',1),(237,'9480293457',1),(238,'9033975716',1),(239,'9324312621',1),(240,'8454035284',1),(241,'9835174120',1),(242,'9421222359',2),(243,'9823021439',1),(244,'7208883654',1),(245,'9820074875',1),(246,'9829072899',1),(247,'9930557375',1),(248,'9993628884',1),(249,'9850091603',1),(250,'9831172577',1),(251,'9721111541',1),(252,'8208422881',1),(253,'9878899505',1),(254,'9831539925',1),(255,'9830174161',1),(256,'8889322217',1),(257,'9991294949',1),(258,'9872031000',1),(259,'9160518158',1),(260,'9334104592',1),(261,'8887861740',1),(262,'9970542044',1),(263,'8944918548',1),(264,'9934360504',1),(265,'9912023324',1),(266,'8985896701',1),(267,'8007032094',1),(268,'7838349006',1),(269,'9937023633',1),(270,'9815160660',1),(271,'8285333684',1),(272,'8160333076',1),(273,'9689947624',1),(274,'9833195157',1),(275,'8349574389',1),(276,'9901163527',1),(277,'9419440272',1),(278,'8794404370',1),(279,'9815800431',1),(280,'9845505821',1),(281,'9419191133',1),(282,'9901184938',1),(283,'9878672301',1),(284,'9438083265',1),(285,'9829228188',1),(286,'8788267926',1),(287,'9080587134',1),(288,'9987645423',1),(289,'9353676794',2),(290,'9443136826',1),(291,'8805162709',1),(292,'9383582522',1),(293,'9898209298',1),(294,'9448094286',1),(295,'9897222121',1),(296,'9829073484',1);
+/*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `user_honorific` enum('Dr','Mr','Mrs','Ms') NOT NULL,
+  `user_first_name` varchar(100) DEFAULT NULL,
+  `user_middle_name` varchar(100) DEFAULT NULL,
+  `user_last_name` varchar(100) DEFAULT NULL,
+  `user_email` varchar(255) NOT NULL,
+  `user_phone` varchar(10) NOT NULL,
+  `user_med_council_number` varchar(14) NOT NULL,
+  `user_category` enum('Delegate','Faculty') NOT NULL,
+  `user_type` varchar(100) NOT NULL,
+  `user_package_id` int DEFAULT NULL,
+  `user_city` varchar(100) NOT NULL,
+  `user_state_of_practice` varchar(100) NOT NULL,
+  `user_payment_id` varchar(20) NOT NULL DEFAULT 'MOJO',
+  `user_payment_status` enum('SUCCESS','FAILED','PENDING') DEFAULT 'PENDING',
+  `user_registration_type` varchar(10) NOT NULL DEFAULT 'DEFAULT',
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `user_phone` (`user_phone`),
+  KEY `ix_users_user_last_name` (`user_last_name`),
+  KEY `ix_users_user_first_name` (`user_first_name`),
+  KEY `ix_users_user_middle_name` (`user_middle_name`),
+  KEY `ix_users_user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17360 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'Dr','Sunita','Ravindra','Devarshi','drsrdevarshi@gmail.com','9448854789','37067','Delegate','Clinician',1,'Nipani... 591237','Karnataka','MOJO','PENDING','DEFAULT'),(2,'Dr','Vinutha ','S','S','vinuthaniharika1@gmail.com','7438641546','43088','Delegate','Clinician',1,'Bengaluru','Karnataka','MOJO','PENDING','DEFAULT'),(287,'Mr','Md','','Faisal','mohammedfaisal3366@gmail.com','9053676790','NA','Delegate','Embryologist',1,'Tumkur','Chhattisgarh','MOJO','PENDING','DEFAULT'),(1820,'Dr','Natarajan ','Umadevi','Umadevi','numadevips@yahoo.com','9842838481','54273','Delegate','Clinician',6,'Dindigul','Tamil Nadu','MOJO','PENDING','DEFAULT'),(5423,'Dr','SIRISHA ','','SANKARA ','sirisrinivas12@gmail.com','9441574475','62913','Delegate','Clinician',1,'Kadapa','Andhra Pradesh','MOJO','PENDING','DEFAULT'),(8251,'Dr','Nivedita','','Shetty','drniveditashetty@gmail.com','9886271919','38511','Faculty','Clinician',6,'Mysore ','Karnataka','MOJO','PENDING','DEFAULT'),(17353,'Dr','Chitra','','Thyagaraju ','drchitra@yahoo.com','9488818644','50167','Delegate','Clinician',1,'Pondicherry ','Tamil Nadu','MOJO','PENDING','DEFAULT'),(17354,'Dr','Alpana ','Jayant ','Watwe','alpanawatwe@gmail.com','9421222359','MMC 56106','Delegate','IVF consultant ',6,'Sangli','Maharashtra','MOJO','PENDING','DEFAULT'),(17358,'Dr','CHAITHRA','Sondalgere','Kirshnaiah','drchaithrask@gmail.com','9731846425','83930','Delegate','Clinician',1,'Bangalore','Karnataka','MOJO4321N05Q20853896','SUCCESS','DEFAULT'),(17359,'Dr','Md','','Faisal','mohammedfaisal3366@gmail.com','9353676794','NA','Delegate','Embryologist',2,'Tumkur','Karnataka','MOJO','PENDING','DEFAULT');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2024-04-23 19:45:07
