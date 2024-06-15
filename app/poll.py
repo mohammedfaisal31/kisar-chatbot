@@ -56,7 +56,7 @@ def checkRegistrationAndSendPaymentLink():
                             if _send_payment_link_code == 200:
                                 _update_session_code = updateUserSession(phone_number,2,db)
                                 if _update_session_code:
-                                    worksheet.update_cell(i+2, 17, "TRUE")
+                                    worksheet.update_cell(i+2, 19, "TRUE")
                                     print(f"Payment link sent and record updated for phone number: {phone_number}")
                         except Exception as e:
                             print(f"Error {e}")
@@ -66,7 +66,7 @@ def checkRegistrationAndSendPaymentLink():
                             if _send_payment_link_code == 200:
                                 _update_session_code = createCustomUserSession(phone_number,2,db)
                                 if _update_session_code:
-                                    worksheet.update_cell(i+2, 17, "TRUE")
+                                    worksheet.update_cell(i+2, 19, "TRUE")
                                     print(f"Payment link sent and record updated for phone number: {phone_number}")
                         except Exception as e:
                             print(f"Error {e}")
