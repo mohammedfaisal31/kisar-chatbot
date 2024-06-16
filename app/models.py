@@ -9,7 +9,7 @@ class User(Base):
     user_honorific = Column(Enum("Dr", "Mr", "Mrs", "Ms"), nullable=False)
     user_first_name = Column(String(255), index=True)
     user_middle_name = Column(String(255), index=True)
-    user_last_name = Column(String(100), index=True)
+    user_last_name = Column(String(100), index=True,server_default=" ")
     user_email = Column(String(255), nullable=False)
     user_phone = Column(String(10), unique=True, nullable=False)
     user_med_council_number = Column(String(255), nullable=False)  
@@ -18,9 +18,10 @@ class User(Base):
     user_package_id = Column(Integer,nullable=True)
     user_city = Column(String(255), nullable=False)
     user_state_of_practice = Column(String(255), nullable=False)
-    user_payment_id = Column(String(20),server_default="MOJO" ,nullable=False)
+    user_payment_id = Column(String(36),server_default="MOJO" ,nullable=False)
     user_payment_status = Column(Enum("SUCCESS", "FAILED","PENDING"), server_default="PENDING")
     user_registration_type = Column(String(10),server_default="DEFAULT" ,nullable=False)
+    user_organisation=Column(String(255),server_default="INDIVIDUAL" ,nullable=False)
 
 class Package(Base):
     __tablename__ = "packages"

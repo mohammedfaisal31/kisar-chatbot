@@ -7,7 +7,7 @@ from db import *
 from utils import processWhatsAppMessage, processPayment
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-
+from bulkRegister import bulkRegister
 load_dotenv()
 
 verify_token = os.getenv("VERIFY_TOKEN")
@@ -51,6 +51,10 @@ async def verify_webhook(request: Request):
         return int(hub["hub.challenge"])
     else:
         raise HTTPException(status_code=403, detail="Invalid token")
+
+@kisar_router.post("/bulk-register")
+async def process_data():
+    return bulkRegister()
 
 # Include the kisar_router in the main app
 app.include_router(kisar_router)
