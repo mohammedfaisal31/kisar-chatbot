@@ -92,9 +92,9 @@ def generate_badge_with_qr_and_text(template_path, out_img_path, payment_id, hon
         qr_img = qr.make_image(fill_color="#0b212f", back_color="#fdbd19").convert("RGBA")
 
         # Paste the QR code onto the template
-        qr_size = (int(1.9 * inch), int(1.9 * inch))
+        qr_size = (int(6 * inch), int(6 * inch))
         qr_img = qr_img.resize(qr_size, Image.LANCZOS)
-        qr_x, qr_y = 237, 280
+        qr_x, qr_y = 375, 795
         template.paste(qr_img, (qr_x, qr_y), qr_img)
 
         # Prepare the name and location strings
@@ -106,19 +106,24 @@ def generate_badge_with_qr_and_text(template_path, out_img_path, payment_id, hon
         from_string = f"{city}, {state}".upper()
 
         # Load a font
-        font_size_name = 18 if len(name_string) <= 19 else 15 if len(name_string) <= 25 else 12
-        font = ImageFont.truetype("arial.ttf", font_size_name)
-        font_from = ImageFont.truetype("arial.ttf", 10)
+        font_size_name = 48 if len(name_string) <= 19 else 45 if len(name_string) <= 25 else 42
+        font = ImageFont.truetype("./Courier-Bold.otf", font_size_name)
+        font_from = ImageFont.truetype("./Courier-Bold.otf", 32)
 
         # Calculate text position
-        name_width, name_height = draw.textsize(name_string, font=font)
-        from_width, from_height = draw.textsize(from_string, font=font_from)
-        
+        name_bbox = draw.textbbox((0, 0), name_string, font=font)
+        from_bbox = draw.textbbox((0, 0), from_string, font=font_from)
+
+        name_width = name_bbox[2] - name_bbox[0]
+        name_height = name_bbox[3] - name_bbox[1]
+        from_width = from_bbox[2] - from_bbox[0]
+        from_height = from_bbox[3] - from_bbox[1]
+
         x_coordinate_name = (template.width - name_width) / 2
-        y_coordinate_name = 180 + int(0.5 * inch)
+        y_coordinate_name = 1280 + int(1 * inch)
 
         x_coordinate_from = (template.width - from_width) / 2
-        y_coordinate_from = 160 + int(0.5 * inch)
+        y_coordinate_from = 1350 + int(1 * inch)
 
         # Draw the text onto the template
         draw.text((x_coordinate_name, y_coordinate_name), name_string, font=font, fill="black")
@@ -131,5 +136,4 @@ def generate_badge_with_qr_and_text(template_path, out_img_path, payment_id, hon
     except Exception as e:
         print(f"An error occurred: {e}")
         return False
-
 
