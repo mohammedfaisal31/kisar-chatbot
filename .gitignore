@@ -1,0 +1,7 @@
+app/pdfs/
+app/images/
+app/template/
+app/__pycache__/
+app/gcloud_cred.json
+app/.env
+app/myenv/

@@ -6,7 +6,7 @@ import qrcode
 def generate_pdf_with_qr_and_text(template_path, pdf_path, payment_id, honorific, first_name, middle_name, last_name, city, state):
     try:
         c = canvas.Canvas(pdf_path, pagesize=letter)
-
+        print(pdf_path)
         # Load the template image
         c.drawImage(template_path, 0, 0, width=letter[0], height=letter[1])
 
@@ -67,10 +67,12 @@ def generate_pdf_with_qr_and_text(template_path, pdf_path, payment_id, honorific
         c.drawString(x_coordinate_from, 160 + 0.5 * inch, from_string)
         
         c.save()
+        print("Saved pdf")
         return True
     except Exception as e:
         print(f"An error occurred: {e}")
         return False
     
+
 
 

@@ -30,6 +30,7 @@ def createPaymentLink(paymentDetails):
         buyer_name=paymentDetails["buyer_name"],
         phone=paymentDetails["phone"],
         email=paymentDetails["email"],
+        allow_repeated_payments=False,
         redirect_url=f"{HOST}/payment-success",
         webhook=f"{HOST}/payment-webhook"
     )

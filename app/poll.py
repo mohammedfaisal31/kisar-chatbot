@@ -27,6 +27,7 @@ def checkRegistrationAndSendPaymentLink():
         # Update records and call sendPaymentLink
         for i, row in enumerate(data):
             if row["Timestamp"] != "" and row["Payment Link Sent"] != "TRUE" :
+                print("Not true===========================================================================")
                 _package_id = 0
                 if "NR1-1" in row["Select the package"]:
                     _package_id = 1
