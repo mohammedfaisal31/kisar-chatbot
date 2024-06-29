@@ -15,6 +15,7 @@ from bulkRegister import bulkRegister
 from io import BytesIO
 import zipfile
 from qr import * 
+import tempfile
 
 
 load_dotenv()
@@ -121,32 +122,29 @@ async def generate_badges(request: Request):
     output_dir = "./badges/"
     os.makedirs(output_dir, exist_ok=True)
 
-    zip_buffer = BytesIO()
-    with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED) as zf:
-        for payment_id in payment_ids:
-            user = db.query(User).filter(User.user_payment_id == payment_id).first()
-            if not user:
-                continue
-            template_path = "./template/delegate_cut_500.png" if user.user_category == "Delegate" else "./template/faculty_cut_500.png"
-            output_image_path = os.path.join(output_dir, f"{payment_id}.png")
-            if generate_badge_with_qr_and_text(
-                template_path,
-                output_image_path,
-                user.user_payment_id,
-                user.user_honorific,
-                user.user_first_name,
-                user.user_middle_name,
-                user.user_last_name,
-                user.user_city,
-                user.user_state_of_practice,
-            ):
-                with open(output_image_path, "rb") as f:
-                    zf.writestr(f"{payment_id}.png", f.read())
-
-    zip_buffer.seek(0)
+    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+        with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as zf:
+            for payment_id in payment_ids:
+                user = db.query(User).filter(User.user_payment_id == payment_id).first()
+                if not user:
+                    continue
+                template_path = "./template/delegate_cut_500.png" if user.user_category == "Delegate" else "./template/faculty_cut_500.png"
+                output_image_path = os.path.join(output_dir, f"{payment_id}.png")
+                if generate_badge_with_qr_and_text(
+                    template_path,
+                    output_image_path,
+                    user.user_payment_id,
+                    user.user_honorific,
+                    user.user_first_name,
+                    user.user_middle_name,
+                    user.user_last_name,
+                    user.user_city,
+                    user.user_state_of_practice,
+                ):
+                    zf.write(output_image_path, f"{payment_id}.png")
 
     return FileResponse(
-        zip_buffer,
+        tmp_file.name,
         media_type="application/x-zip-compressed",
         filename="badges.zip"
     )
