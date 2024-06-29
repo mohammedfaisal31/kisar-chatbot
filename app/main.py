@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 from db import *
 from models import *
-from utils import processWhatsAppMessage, processPayment, generate_pdf_with_qr_and_text, generate_badge_with_qr_and_text
+from utils import processWhatsAppMessage, processPayment, generate_pdf_with_qr_and_text
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from bulkRegister import bulkRegister
