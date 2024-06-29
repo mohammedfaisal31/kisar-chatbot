@@ -30,6 +30,8 @@ app = FastAPI()
 # Mount static directories
 app.mount("/kisar/template", StaticFiles(directory="./template"), name="template")
 app.mount("/kisar/pdfs", StaticFiles(directory="./pdfs"), name="pdfs")
+app.mount("/kisar/badges", StaticFiles(directory="./badges"), name="badges")
+
 
 # Endpoint for /kisar/webhook
 @kisar_router.post("/webhook")
