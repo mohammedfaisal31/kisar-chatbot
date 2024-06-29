@@ -109,14 +109,13 @@ async def send_badge(request: Request):
 
 @kisar_router.post("/generate_badges/")
 async def generate_badges(request: Request):
-    db = get_db()
     body = await request.json()
+    db = get_db()
     payment_ids: list[str] = body.get("payment_ids")
     
     if not payment_ids:
         raise HTTPException(status_code=400, detail="Payment IDs list is empty.")
 
-    template_path = ""  # Path to your template image
     output_dir = "./badges/"
     os.makedirs(output_dir, exist_ok=True)
 
@@ -126,12 +125,8 @@ async def generate_badges(request: Request):
             user = db.query(User).filter(User.user_payment_id == payment_id).first()
             if not user:
                 continue
-            if user.user_category == "Delegate":
-                template_path = "./template/delegate_500.png"
-            else:
-                template_path = "./template/faculty_500.png"
-
-            output_image_path = os.path.join(output_dir, f"{payment_id}.png")
+            template_path = "./template/delegate_500.png" if user.user_category == "Delegate" else "./template/faculty_500.png"
+            output_image_path = os.path.join(output_dir, f"{payment_id}.pdf")
             if generate_badge_with_qr_and_text(
                 template_path,
                 output_image_path,
@@ -144,7 +139,7 @@ async def generate_badges(request: Request):
                 user.user_state_of_practice,
             ):
                 with open(output_image_path, "rb") as f:
-                    zf.writestr(f"{payment_id}.png", f.read())
+                    zf.writestr(f"{payment_id}.pdf", f.read())
 
     zip_buffer.seek(0)
 
