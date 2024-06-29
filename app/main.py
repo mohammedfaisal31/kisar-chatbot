@@ -126,7 +126,7 @@ async def generate_badges(request: Request):
             if not user:
                 continue
             template_path = "./template/delegate_500.png" if user.user_category == "Delegate" else "./template/faculty_500.png"
-            output_image_path = os.path.join(output_dir, f"{payment_id}.pdf")
+            output_image_path = os.path.join(output_dir, f"{payment_id}.png")
             if generate_badge_with_qr_and_text(
                 template_path,
                 output_image_path,
@@ -139,7 +139,7 @@ async def generate_badges(request: Request):
                 user.user_state_of_practice,
             ):
                 with open(output_image_path, "rb") as f:
-                    zf.writestr(f"{payment_id}.pdf", f.read())
+                    zf.writestr(f"{payment_id}.png", f.read())
 
     zip_buffer.seek(0)
 
