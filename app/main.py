@@ -108,8 +108,11 @@ async def send_badge(request: Request):
         sendDocumentTemplate('91'+user.user_phone, user.user_payment_id)
 
 @kisar_router.post("/generate_badges/")
-async def generate_badges(payment_ids: list[str]):
+async def generate_badges(request: Request):
     db = get_db()
+    body = await request.json()
+    payment_ids: list[str] = body.get("payment_ids")
+    
     if not payment_ids:
         raise HTTPException(status_code=400, detail="Payment IDs list is empty.")
 
