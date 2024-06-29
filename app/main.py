@@ -1,22 +1,18 @@
 from fastapi import APIRouter, FastAPI, Request, HTTPException, Form
-from typing import Dict
-import requests
-from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware  # Import CORS middleware
+from typing import Optional
 import os
+from dotenv import load_dotenv
 from db import *
 from models import *
-from utils import processWhatsAppMessage, processPayment
+from utils import processWhatsAppMessage, processPayment, generate_pdf_with_qr_and_text, generate_badge_with_qr_and_text
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from typing import Optional
-import uuid
-from utils import * 
 from bulkRegister import bulkRegister
 from io import BytesIO
 import zipfile
-from qr import * 
+from qr import *
 import tempfile
-
 
 load_dotenv()
 
@@ -27,6 +23,15 @@ kisar_router = APIRouter(prefix="/kisar")
 
 # Define your FastAPI app
 app = FastAPI()
+
+# Allow CORS from any origin
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows CORS from any origin
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
 
 # Mount static directories
 app.mount("/kisar/template", StaticFiles(directory="./template"), name="template")
