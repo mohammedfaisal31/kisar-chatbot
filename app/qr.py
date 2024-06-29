@@ -93,7 +93,7 @@ def generate_badge_with_qr_and_text(template_path, out_img_path, payment_id, hon
 
         # Paste the QR code onto the template
         qr_size = (int(1.9 * inch), int(1.9 * inch))
-        qr_img = qr_img.resize(qr_size, Image.ANTIALIAS)
+        qr_img = qr_img.resize(qr_size, Image.LANCZOS)
         qr_x, qr_y = 237, 280
         template.paste(qr_img, (qr_x, qr_y), qr_img)
 
