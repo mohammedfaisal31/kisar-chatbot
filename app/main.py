@@ -13,6 +13,7 @@ from io import BytesIO
 import zipfile
 from qr import *
 import tempfile
+import uuid
 
 load_dotenv()
 
