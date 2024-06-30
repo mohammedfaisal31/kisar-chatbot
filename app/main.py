@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 from db import *
 from models import *
-from utils import processWhatsAppMessage, processPayment, generate_pdf_with_qr_and_text
+from utils import processWhatsAppMessage, processPayment, generate_pdf_with_qr_and_text,sendDocumentTemplate
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from bulkRegister import bulkRegister
@@ -14,6 +14,7 @@ import zipfile
 from qr import *
 import tempfile
 import uuid
+
 
 load_dotenv()
 
