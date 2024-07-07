@@ -24,6 +24,20 @@ gc = gspread.service_account(filename='./gcloud_cred.json')
 worksheet = gc.open_by_key(SHEET_ID).worksheet("BULK")
 
 
+def getPackageID(package_code):
+    package_code_to_id = {
+        'NR1-1': 1,
+        'NR1-2': 2,
+        'SO1-1': 3,
+        'SO1-2': 4,
+        'DO1-1': 5,
+        'DO1-2': 6
+    }
+
+    # Return the package ID for the given package code
+    return package_code_to_id.get(package_code, "Invalid package code")
+
+
 async def bulkRegister():
     print("Reached")
     try:
@@ -52,6 +66,9 @@ async def bulkRegister():
                 payment_id = str(uuid.uuid4().hex)
                 print(payment_id)
                 # Create a new User object
+                package_id = getPackageID(row['Select the package'])
+                if not package_id:
+                    package_id = 1
                 new_user = User(
                     user_honorific=row['Honorific'],
                     user_first_name=row['First Name'],
@@ -62,11 +79,11 @@ async def bulkRegister():
                     user_med_council_number=row['Medical Council Number'],
                     user_category=row['Category'],
                     user_type=row['Type Of Visitor'],
-                    user_package_id=None,  # Assign package ID if available
+                    user_package_id=package_id,
                     user_city=row['City'],
                     user_state_of_practice=row['State'],
                     user_payment_id=payment_id,
-                    user_payment_status='PENDING',
+                    user_payment_status='SUCCESS',
                     user_registration_type='DEFAULT',
                     user_organisation=row['Organisation']
                 )
@@ -125,7 +142,7 @@ async def bulkRegister():
 
         # Build the multi-part response
         multipart_response = build_multipart_response(parts)
-        return Response(content=multipart_response, media_type='multipart/form-data; boundary=boundary')
+        return Response(content=multipart_response, media_type='application/x-zip-compressed')
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
