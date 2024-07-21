@@ -378,7 +378,8 @@ def sendPaymentLinkTemplate(to):
 
         elif package.package_id == 2:
             paymentDetails["purpose"] = f"{package.package_title} + Accompanying person"
-                    
+        elif package.package_id == 7:
+            paymentDetails["purpose"] = f"Package for {package.package_title}"
         else:
             paymentDetails["purpose"] = f"{package.package_title} {package.package_occupancy} Occupancy {package.package_duration} package "
         paymentDetails["phone"] = user.user_phone 

@@ -41,6 +41,8 @@ def checkRegistrationAndSendPaymentLink():
                     _package_id = 5
                 elif "DO1-2" in row["Select the package"]:
                     _package_id = 6
+                elif "FPE-1" in row["Select the package"]:
+                    _package_id = 7
                 else:
                     _package_id = 0
                 
