@@ -15,7 +15,7 @@ SHEET_ID = os.getenv('SHEET_ID')
 
 
 # Authorize access to Google Sheets
-gc = gspread.service_account(filename='./gcloud_cred.json')
+gc = gspread.service_account(filename='./gcloud_cred.json',scopes=['https://spreadsheets.google.com/feeds'])
 worksheet = gc.open_by_key(SHEET_ID).sheet1
 
 def updatePaymentStatusInSheet(phone,status):

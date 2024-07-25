@@ -54,7 +54,7 @@ async def webhook(request: Request):
 async def paymentWebhook(payload: Request):
     data = await payload.form()
     # print(data["amount"])
-    #result = processPayment(data)
+    result = processPayment(data)
     return {"message": "Webhook received successfully"}
 
 # Endpoint for /kisar/payment-success
