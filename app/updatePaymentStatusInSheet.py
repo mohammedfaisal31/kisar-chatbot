@@ -14,13 +14,14 @@ SHEET_ID = os.getenv('SHEET_ID')
 
 
 
-# Authorize access to Google Sheets
-gc = gspread.service_account(filename='./gcloud_cred.json',scopes=['https://spreadsheets.google.com/feeds'])
-worksheet = gc.open_by_key(SHEET_ID).sheet1
 
 def updatePaymentStatusInSheet(phone,status):
     try:
         # Filter data based on conditions
+        # Authorize access to Google Sheets
+        gc = gspread.service_account(filename='./gcloud_cred.json',scopes=['https://spreadsheets.google.com/feeds'])
+        worksheet = gc.open_by_key(SHEET_ID).sheet1
+
         data = worksheet.get_all_records()
         flag = False 
         for i, row in enumerate(data):
