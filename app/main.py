@@ -108,6 +108,12 @@ async def send_badge(request: Request):
             db.commit()
         else:
             user_payment_id = user.user_payment_id
+            pdf_path=f"./pdfs/{user_payment_id}.pdf"
+            generate_pdf_with_qr_and_text(
+            template_path, pdf_path, user_payment_id, user.user_honorific, user.user_first_name,
+            user.user_middle_name, user.user_last_name, user.user_city, user.user_state_of_practice
+            )
+            
         sendDocumentTemplate('91'+user.user_phone, user.user_payment_id)
 
     elif user_payment_id:
