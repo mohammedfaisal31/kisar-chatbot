@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 from db import *
 from models import *
-from utils import processWhatsAppMessage, processPayment, generate_pdf_with_qr_and_text,sendDocumentTemplate
+from utils import processWhatsAppMessage, sendPaymentLinkTemplate, processPayment, generate_pdf_with_qr_and_text,sendDocumentTemplate
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from bulkRegister import bulkRegister
@@ -75,6 +75,12 @@ async def verify_webhook(request: Request):
 async def process_data():
     return await bulkRegister()
 
+@kisar_router.get("/send-payment-link")
+async def send_link(request: Request):
+    body = await request.json()
+    user_phone: Optional[str] = body.get("user_phone")
+    return await sendPaymentLinkTemplate("91"+user_phone)
+
 # New endpoint for sending badge
 @kisar_router.post("/send-badge")
 async def send_badge(request: Request):
@@ -107,6 +113,10 @@ async def send_badge(request: Request):
             )
             db.commit()
         else:
+            if user.user_category == "Delegate":
+                template_path = "./template/delegate_500.png"
+            else:
+                template_path = "./template/faculty_500.png"
             user_payment_id = user.user_payment_id
             pdf_path=f"./pdfs/{user_payment_id}.pdf"
             generate_pdf_with_qr_and_text(
