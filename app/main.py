@@ -75,7 +75,7 @@ async def verify_webhook(request: Request):
 async def process_data():
     return await bulkRegister()
 
-@kisar_router.get("/send-payment-link")
+@kisar_router.post("/send-payment-link")
 async def send_link(request: Request):
     body = await request.json()
     user_phone: Optional[str] = body.get("user_phone")
