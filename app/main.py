@@ -39,10 +39,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static directories
-app.mount("/kisar/template", StaticFiles(directory="./template"), name="template")
-app.mount("/kisar/pdfs", StaticFiles(directory="./pdfs"), name="pdfs")
-app.mount("/kisar/badges", StaticFiles(directory="./badges"), name="badges")
 
 
 class StateEnum(str, Enum):
