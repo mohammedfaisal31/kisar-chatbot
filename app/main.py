@@ -112,7 +112,7 @@ async def generate_certificate(
     output = BytesIO()
     
     # Overlay text on image
-    overlay_text_on_png(template_path, output, text_lines, positions=[(730, 460), (302, 420), (230, 212)], font_path='./Courier-Bold-2.otf', font_size=30)
+    overlay_text_on_png(template_path, output, text_lines, positions=[(730, 460), (302, 420), (230, 212)], font_size=30)
 
     # Create PDF from image
     pdf_path = "/tmp/certificate.pdf"
@@ -199,13 +199,13 @@ async def form():
     """
     return HTMLResponse(content=html)
 
-def overlay_text_on_png(template_path, output_path, text_lines, positions, font_path='./Courier-Bold-2.otf', font_size=20):
+def overlay_text_on_png(template_path, output_path, text_lines, positions, font_size=20):
     # Load the template image
     img = Image.open(template_path)
     draw = ImageDraw.Draw(img)
     
-    # Load a custom font
-    font = ImageFont.truetype(font_path, font_size)
+    # Use a default font
+    font = ImageFont.load_default()  # Load default font which does not require a font file
     
     # Draw each line of text
     for text, (x, y) in zip(text_lines, positions):
@@ -213,6 +213,7 @@ def overlay_text_on_png(template_path, output_path, text_lines, positions, font_
     
     # Save the modified image
     img.save(output_path)
+    
 # Include the kisar_router in the main app
 app.include_router(kisar_router)
 
