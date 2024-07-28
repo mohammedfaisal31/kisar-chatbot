@@ -169,7 +169,7 @@ async def form():
     </head>
     <body>
         <h2>Generate Certificate</h2>
-        <form action="/generate_certificate" method="post">
+        <form action="/kisar/generate_certificate" method="post">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" required>
 
