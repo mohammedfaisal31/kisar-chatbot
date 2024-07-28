@@ -104,7 +104,7 @@ async def generate_certificate(
     if category.lower() == 'faculty':
         template_path = './certificate/faculty_certificate.png'
     elif category.lower() == 'delegate':
-        template_path = './certificate/delegate_certficate.png'
+        template_path = './certificate/delegate_certificate.png'
     else:
         raise HTTPException(status_code=400, detail="Invalid category")
 
