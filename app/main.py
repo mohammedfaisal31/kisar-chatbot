@@ -104,7 +104,7 @@ async def generate_certificate(
     if category.lower() == 'faculty':
         template_path = './certificate/faculty_certificate.png'
     elif category.lower() == 'delegate':
-        template_path = './certificate/delegate_certificate.png'
+        template_path = './certificate/delegate_certficate.png'
     else:
         raise HTTPException(status_code=400, detail="Invalid category")
 
@@ -199,7 +199,7 @@ async def form():
     """
     return HTMLResponse(content=html)
 
-def overlay_text_on_png(template_path, output_path, text_lines, positions, font_path='./Courier-Bold.otf', font_size=20):
+def overlay_text_on_png(template_path, output_path, text_lines, positions, font_path='./Courier-Bold-2.otf', font_size=20):
     # Load the template image
     img = Image.open(template_path)
     draw = ImageDraw.Draw(img)
