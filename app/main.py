@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from bulkRegister import bulkRegister
 from io import BytesIO
+from reportlab.lib.pagesizes import A4
 import zipfile
 from qr import *
 from fastapi.responses import StreamingResponse,HTMLResponse
@@ -112,12 +113,12 @@ async def generate_certificate(
     output = BytesIO()
     
     # Overlay text on image
-    overlay_text_on_png(template_path, "./image.png", text_lines, positions=[(730, 460), (302, 420), (230, 212)], font_path='./Courier-Bold.otf', font_size=30)
+    overlay_text_on_png(template_path, "./tmp/image.png", text_lines, positions=[(730, 460), (302, 420), (230, 212)], font_path='./Courier-Bold.otf', font_size=30)
 
     # Create PDF from image
-    pdf_path = "./certificate.pdf"
+    pdf_path = "./tmp/certificate.pdf"
     c = canvas.Canvas(pdf_path, pagesize=letter)
-    c.drawImage("./image.png", 0, 0, width=letter[0], height=letter[1])
+    c.drawImage("./tmp/image.png", 0, 0, width=A4[0], height=letter[1])
     c.save()
 
     # Return PDF file as streaming response
