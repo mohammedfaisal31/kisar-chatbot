@@ -12,6 +12,10 @@ from bulkRegister import bulkRegister
 from io import BytesIO
 import zipfile
 from qr import *
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
+from typing import List
+from enum import Enum
 import tempfile
 import uuid
 
@@ -41,137 +45,182 @@ app.mount("/kisar/pdfs", StaticFiles(directory="./pdfs"), name="pdfs")
 app.mount("/kisar/badges", StaticFiles(directory="./badges"), name="badges")
 
 
-# Endpoint for /kisar/webhook
-@kisar_router.post("/webhook")
-async def webhook(request: Request):
-    body = await request.json()
-    print(body)
-    response = processWhatsAppMessage(body)
-    return {"status": "ok"}
+class StateEnum(str, Enum):
+    Karnataka = "Karnataka"
+    Tamil_Nadu = "Tamil Nadu"
+    Andhra_Pradesh = "Andhra Pradesh"
+    Telangana = "Telangana"
+    Kerala = "Kerala"
+    Maharashtra = "Maharashtra"
+    # Add other Indian states here
+    # Example: Gujarat = "Gujarat", West_Bengal = "West Bengal", etc.
+    # For brevity, add all other states as needed
+    Gujarat = "Gujarat"
+    West_Bengal = "West Bengal"
+    Uttar_Pradesh = "Uttar Pradesh"
+    Rajasthan = "Rajasthan"
+    Punjab = "Punjab"
+    Haryana = "Haryana"
+    Himachal_Pradesh = "Himachal Pradesh"
+    Uttarakhand = "Uttarakhand"
+    Jammu_and_Kashmir = "Jammu and Kashmir"
+    Ladakh = "Ladakh"
+    Sikkim = "Sikkim"
+    Arunachal_Pradesh = "Arunachal Pradesh"
+    Nagaland = "Nagaland"
+    Manipur = "Manipur"
+    Mizoram = "Mizoram"
+    Tripura = "Tripura"
+    Assam = "Assam"
+    Meghalaya = "Meghalaya"
+    Andaman_and_Nicobar_Islands = "Andaman and Nicobar Islands"
+    Chandigarh = "Chandigarh"
+    Dadra_and_Nagar_Haveli = "Dadra and Nagar Haveli"
+    Daman_and_Diu = "Daman and Diu"
+    Delhi = "Delhi"
+    Puducherry = "Puducherry"
 
-# Endpoint for /kisar/payment-webhook
-@kisar_router.post("/payment-webhook")
-async def paymentWebhook(payload: Request):
-    data = await payload.form()
-    # print(data["amount"])
-    result = processPayment(data)
-    return {"message": "Webhook received successfully"}
+class CertificateRequest(BaseModel):
+    name: str
+    medical_council_number: str
+    state_of_medical_council: StateEnum
+    category: str
 
-# Endpoint for /kisar/payment-success
-@kisar_router.get("/payment-success")
-async def paymentSuccess():
-    return FileResponse("paymentSuccess.html")
+@kisar_router.post("/generate_certificate")
+async def generate_certificate(request: CertificateRequest):
+    # Validate that medical_council_number contains only digits
+    if not request.medical_council_number.isdigit():
+        raise HTTPException(status_code=400, detail="Medical council number must contain only digits")
 
-# Endpoint for verification of webhook
-@kisar_router.get("/webhook")
-async def verify_webhook(request: Request):
-    hub = request.query_params
-    if hub["hub.mode"] == "subscribe" and hub["hub.verify_token"] == verify_token:
-        return int(hub["hub.challenge"])
+    # Prepare certificate text
+    text_lines = [
+        request.name,
+        request.medical_council_number,
+        request.state_of_medical_council
+    ]
+
+    # Choose template based on category
+    if request.category.lower() == 'faculty':
+        template_path = './certificate/faculty_certificate.png'
+    elif request.category.lower() == 'delegate':
+        template_path = './certificate/delegate_certificate.png'
     else:
-        raise HTTPException(status_code=403, detail="Invalid token")
+        raise HTTPException(status_code=400, detail="Invalid category")
 
-@kisar_router.get("/bulk-register")
-async def process_data():
-    return await bulkRegister()
-
-@kisar_router.post("/send-payment-link")
-async def send_link(request: Request):
-    body = await request.json()
-    user_phone: Optional[str] = body.get("user_phone")
-    return await sendPaymentLinkTemplate("91"+user_phone)
-
-# New endpoint for sending badge
-@kisar_router.post("/send-badge")
-async def send_badge(request: Request):
-    db = get_db()
-    body = await request.json()
-    user_payment_id: Optional[str] = body.get("user_payment_id")
-    user_phone: Optional[str] = body.get("user_phone")
+    # Prepare output path
+    output = BytesIO()
     
-    if not user_payment_id and not user_phone:
-        raise HTTPException(status_code=400, detail="Either user_payment_id or user_phone must be provided.")
+    # Overlay text on image
+    overlay_text_on_png(template_path, output, text_lines, positions=[(730, 460), (302, 420), (230, 212)], font_path='./Courier-Bold.otf', font_size=30)
 
-    if user_phone:
-        user = db.query(User).filter(User.user_phone == user_phone).first()
-        template_path=''
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found.")
-        if user.user_payment_id == "MOJO":
-            if user.user_category == "Delegate":
-                template_path = "./template/delegate_500.png"
-            else:
-                template_path = "./template/faculty_500.png"
+    # Create PDF from image
+    pdf_path = "/tmp/certificate.pdf"
+    c = canvas.Canvas(pdf_path, pagesize=letter)
+    c.drawImage(output, 0, 0, width=letter[0], height=letter[1])
+    c.save()
 
+    # Return PDF file as streaming response
+    pdf_stream = open(pdf_path, "rb")
+    return StreamingResponse(pdf_stream, media_type="application/pdf", headers={"Content-Disposition": "attachment; filename=certificate.pdf"})
+
+@kisar_router.get("/certificate")
+async def form():
+    html = """
+    <html>
+    <head>
+        <title>Certificate Form</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+            h1 {
+                color: #333;
+                text-align: center;
+                padding-top: 20px;
+            }
+            form {
+                max-width: 600px;
+                margin: 0 auto;
+                background: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            label {
+                font-weight: bold;
+                display: block;
+                margin: 10px 0 5px;
+            }
+            input, select {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+            input[type="submit"] {
+                background-color: #0867ec;
+                color: white;
+                border: none;
+                padding: 15px;
+                font-size: 16px;
+                cursor: pointer;
+                border-radius: 4px;
+            }
+            input[type="submit"]:hover {
+                background-color: #065bb5;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Generate Certificate</h1>
+        <form action="/generate_certificate" method="post">
+            <label for="name">Name required in certificate:</label>
+            <input type="text" id="name" name="name" required><br>
             
-            user_payment_id = str(uuid.uuid4())
-            user.user_payment_id = user_payment_id
-            pdf_path=f"./pdfs/{user_payment_id}.pdf"
-            generate_pdf_with_qr_and_text(
-            template_path, pdf_path, user.user_payment_id, user.user_honorific, user.user_first_name,
-            user.user_middle_name, user.user_last_name, user.user_city, user.user_state_of_practice
-            )
-            db.commit()
-        else:
-            if user.user_category == "Delegate":
-                template_path = "./template/delegate_500.png"
-            else:
-                template_path = "./template/faculty_500.png"
-            user_payment_id = user.user_payment_id
-            pdf_path=f"./pdfs/{user_payment_id}.pdf"
-            generate_pdf_with_qr_and_text(
-            template_path, pdf_path, user_payment_id, user.user_honorific, user.user_first_name,
-            user.user_middle_name, user.user_last_name, user.user_city, user.user_state_of_practice
-            )
+            <label for="medical_council_number">Medical council number (only digits):</label>
+            <input type="text" id="medical_council_number" name="medical_council_number" pattern="\d+" required><br>
             
-        sendDocumentTemplate('91'+user.user_phone, user.user_payment_id)
-
-    elif user_payment_id:
-        user = db.query(User).filter(User.user_payment_id == user_payment_id).first()
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found.")
-
-        sendDocumentTemplate('91'+user.user_phone, user.user_payment_id)
-
-@kisar_router.post("/generate_badges/")
-async def generate_badges(request: Request):
-    body = await request.json()
-    db = get_db()
-    payment_ids: list[str] = body.get("payment_ids")
+            <label for="state">State of Medical Council:</label>
+            <select id="state" name="state" required>
+                <option value="" disabled selected>Select your state</option>
+                {state_options}
+            </select><br>
+            
+            <label for="role">Role:</label>
+            <select id="role" name="role" required>
+                <option value="Faculty">Faculty</option>
+                <option value="Delegate">Delegate</option>
+            </select><br>
+            
+            <input type="submit" value="Generate Certificate">
+        </form>
+    </body>
+    </html>
+    """
     
-    if not payment_ids:
-        raise HTTPException(status_code=400, detail="Payment IDs list is empty.")
+    # Generate dropdown options from StateEnum
+    state_options = "".join([f"<option value='{state}'>{state}</option>" for state in StateEnum])
+    return html.format(state_options=state_options)
 
-    output_dir = "./badges/"
-    os.makedirs(output_dir, exist_ok=True)
-
-    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
-        with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as zf:
-            for payment_id in payment_ids:
-                user = db.query(User).filter(User.user_payment_id == payment_id).first()
-                if not user:
-                    continue
-                template_path = "./template/delegate_cut_500.png" if user.user_category == "Delegate" else "./template/faculty_cut_500.png"
-                output_image_path = os.path.join(output_dir, f"{payment_id}.png")
-                if generate_badge_with_qr_and_text(
-                    template_path,
-                    output_image_path,
-                    user.user_payment_id,
-                    user.user_honorific,
-                    user.user_first_name,
-                    user.user_middle_name,
-                    user.user_last_name,
-                    user.user_city,
-                    user.user_state_of_practice,
-                ):
-                    zf.write(output_image_path, f"{payment_id}.png")
-
-    return FileResponse(
-        tmp_file.name,
-        media_type="application/x-zip-compressed",
-        filename="badges.zip"
-    )
-
+def overlay_text_on_png(template_path, output_path, text_lines, positions, font_path='./Courier-Bold.otf', font_size=20):
+    # Load the template image
+    img = Image.open(template_path)
+    draw = ImageDraw.Draw(img)
+    
+    # Load a custom font
+    font = ImageFont.truetype(font_path, font_size)
+    
+    # Draw each line of text
+    for text, (x, y) in zip(text_lines, positions):
+        draw.text((x, y), text, font=font, fill='black')  # Draw text on image
+    
+    # Save the modified image
+    img.save(output_path)
 # Include the kisar_router in the main app
 app.include_router(kisar_router)
 
