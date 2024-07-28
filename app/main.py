@@ -83,22 +83,27 @@ class CertificateRequest(BaseModel):
     category: str
 
 @kisar_router.post("/generate_certificate")
-async def generate_certificate(request: CertificateRequest):
+async def generate_certificate(
+    name: str = Form(...),
+    medical_council_number: str = Form(...),
+    state_of_medical_council: StateEnum = Form(...),
+    category: str = Form(...),
+):
     # Validate that medical_council_number contains only digits
-    if not request.medical_council_number.isdigit():
+    if not medical_council_number.isdigit():
         raise HTTPException(status_code=400, detail="Medical council number must contain only digits")
 
     # Prepare certificate text
     text_lines = [
-        request.name,
-        request.medical_council_number,
-        request.state_of_medical_council
+        name,
+        medical_council_number,
+        state_of_medical_council
     ]
 
     # Choose template based on category
-    if request.category.lower() == 'faculty':
+    if category.lower() == 'faculty':
         template_path = './certificate/faculty_certificate.png'
-    elif request.category.lower() == 'delegate':
+    elif category.lower() == 'delegate':
         template_path = './certificate/delegate_certificate.png'
     else:
         raise HTTPException(status_code=400, detail="Invalid category")
