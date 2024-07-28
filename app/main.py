@@ -12,7 +12,7 @@ from bulkRegister import bulkRegister
 from io import BytesIO
 import zipfile
 from qr import *
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse,HTMLResponse
 from pydantic import BaseModel
 from typing import List
 from enum import Enum
@@ -121,87 +121,78 @@ async def generate_certificate(request: CertificateRequest):
 
 @kisar_router.get("/certificate")
 async def form():
-    html = """
+        # Generate state options HTML
+    state_options = "\n".join(
+        [f'<option value="{state}">{state}</option>' for state in StateEnum]
+    )
+
+    # HTML form template
+    html = f"""
+    <!DOCTYPE html>
     <html>
     <head>
         <title>Certificate Form</title>
         <style>
-            body {
+            body {{
                 font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                margin: 0;
-                padding: 0;
-            }
-            h1 {
-                color: #333;
-                text-align: center;
-                padding-top: 20px;
-            }
-            form {
+                margin: 20px;
+            }}
+            form {{
                 max-width: 600px;
                 margin: 0 auto;
-                background: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-            label {
-                font-weight: bold;
+            }}
+            label {{
                 display: block;
                 margin: 10px 0 5px;
-            }
-            input, select {
+            }}
+            input, select {{
                 width: 100%;
-                padding: 10px;
-                margin-bottom: 15px;
-                border: 1px solid #ddd;
+                padding: 8px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
                 border-radius: 4px;
-                box-sizing: border-box;
-            }
-            input[type="submit"] {
-                background-color: #0867ec;
+            }}
+            button {{
+                background-color: #4CAF50;
                 color: white;
                 border: none;
-                padding: 15px;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
                 font-size: 16px;
+                margin: 4px 2px;
                 cursor: pointer;
                 border-radius: 4px;
-            }
-            input[type="submit"]:hover {
-                background-color: #065bb5;
-            }
+            }}
         </style>
     </head>
     <body>
-        <h1>Generate Certificate</h1>
+        <h2>Generate Certificate</h2>
         <form action="/generate_certificate" method="post">
-            <label for="name">Name required in certificate:</label>
-            <input type="text" id="name" name="name" required><br>
-            
-            <label for="medical_council_number">Medical council number (only digits):</label>
-            <input type="text" id="medical_council_number" name="medical_council_number" pattern="\d+" required><br>
-            
-            <label for="state">State of Medical Council:</label>
-            <select id="state" name="state" required>
-                <option value="" disabled selected>Select your state</option>
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="medical_council_number">Medical Council Number</label>
+            <input type="text" id="medical_council_number" name="medical_council_number" pattern="\d+" required>
+
+            <label for="state_of_medical_council">State of Medical Council</label>
+            <select id="state_of_medical_council" name="state_of_medical_council" required>
                 {state_options}
-            </select><br>
-            
-            <label for="role">Role:</label>
-            <select id="role" name="role" required>
-                <option value="Faculty">Faculty</option>
-                <option value="Delegate">Delegate</option>
-            </select><br>
-            
-            <input type="submit" value="Generate Certificate">
+            </select>
+
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+                <option value="faculty">Faculty</option>
+                <option value="delegate">Delegate</option>
+            </select>
+
+            <button type="submit">Generate Certificate</button>
         </form>
     </body>
     </html>
     """
-    
-    # Generate dropdown options from StateEnum
-    state_options = "".join([f"<option value='{state}'>{state}</option>" for state in StateEnum])
-    return html.format(state_options=state_options)
+    return HTMLResponse(content=html)
 
 def overlay_text_on_png(template_path, output_path, text_lines, positions, font_path='./Courier-Bold.otf', font_size=20):
     # Load the template image
