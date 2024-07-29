@@ -103,7 +103,7 @@ async def generate_certificate(
 
     # Choose template based on category
     if category.lower() == 'faculty':
-        template_path = './certificate/faculty_certificate.png'
+        template_path = './certificate/faculty_certificate.jpg'
     elif category.lower() == 'delegate':
         template_path = './certificate/delegate_certificate.png'
     else:
@@ -111,7 +111,7 @@ async def generate_certificate(
 
     unique_id = str(uuid.uuid4())
     # Prepare output path
-    output_image_path = f"./tmp/image_{unique_id}.png"
+    output_image_path = f"./tmp/image_{unique_id}.jpg"
     pdf_path = f"./tmp/certificate_{unique_id}.pdf"
     
     # Overlay text on image
