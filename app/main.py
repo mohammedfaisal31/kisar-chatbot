@@ -117,10 +117,30 @@ async def generate_certificate(
 
     # Create PDF from image
     pdf_path = "./tmp/certificate.pdf"
-    c = canvas.Canvas(pdf_path, pagesize=letter)
-    c.drawImage("./tmp/image.png", 0, 0, width=A4[0], height=letter[1])
-    c.save()
 
+    img = Image.open("./tmp/image.png")
+    img_width, img_height = img.size
+
+    # Calculate the aspect ratio
+    aspect = img_width / img_height
+
+    # Calculate new dimensions to fit A4 while maintaining aspect ratio
+    a4_width, a4_height = A4
+    if a4_width / a4_height > aspect:
+        new_height = a4_height
+        new_width = a4_height * aspect
+    else:
+        new_width = a4_width
+        new_height = a4_width / aspect
+
+    # Center the image on the PDF
+    x_offset = (a4_width - new_width) / 2
+    y_offset = (a4_height - new_height) / 2
+
+    c = canvas.Canvas(pdf_path, pagesize=letter)
+    c.drawImage("./tmp/image.png", x_offset, y_offset, width=new_width, height=new_height)
+    c.save()
+    
     # Return PDF file as streaming response
     pdf_stream = open(pdf_path, "rb")
     return StreamingResponse(pdf_stream, media_type="application/pdf", headers={"Content-Disposition": "attachment; filename=certificate.pdf"})
