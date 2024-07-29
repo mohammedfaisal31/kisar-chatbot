@@ -121,7 +121,7 @@ async def generate_certificate(
     pdf_path = f"./tmp/certificate_{unique_id}.pdf"
     
     # Overlay text on image
-    overlay_text_on_png(template_path, output_image_path, text_lines,positions,text_lines,font_path,font_size)
+    overlay_text_on_png(template_path, output_image_path, text_lines,positions,font_path,font_size)
 
     # Create PDF from image
     # Create PDF from image
