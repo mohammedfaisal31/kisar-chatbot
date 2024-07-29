@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from bulkRegister import bulkRegister
 from io import BytesIO
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import A4,landscape
 import zipfile
 from qr import *
 from fastapi.responses import StreamingResponse,HTMLResponse
@@ -117,7 +117,7 @@ async def generate_certificate(
 
     # Create PDF from image
     pdf_path = "./tmp/certificate.pdf"
-    c = canvas.Canvas(pdf_path, pagesize=A4)
+    c = canvas.Canvas(pdf_path, landscape(A4))
     c.drawImage("./tmp/image.png", 0, 0, width=A4[0], height=letter[1])
     c.save()
 
