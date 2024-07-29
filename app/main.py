@@ -96,9 +96,9 @@ async def generate_certificate(
 
     # Prepare certificate text
     text_lines = [
-        name,
-        medical_council_number,
-        state_of_medical_council
+        name.upper(),
+        medical_council_number.upper(),
+        state_of_medical_council.upper()
     ]
 
     # Choose template based on category
