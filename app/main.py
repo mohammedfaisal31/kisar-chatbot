@@ -153,7 +153,7 @@ async def generate_certificate(
 
     # Return PDF file as streaming response
     pdf_stream = open(pdf_path, "rb")
-    return StreamingResponse(pdf_stream, media_type="application/pdf", headers={"Content-Disposition": "attachment; filename=certificate.pdf"})
+    return StreamingResponse(pdf_stream, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=certificate_{unique_id}.pdf"})
 
 @kisar_router.get("/certificate")
 async def form():
