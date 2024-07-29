@@ -110,16 +110,39 @@ async def generate_certificate(
         raise HTTPException(status_code=400, detail="Invalid category")
 
     # Prepare output path
-    output = BytesIO()
+    output_image_path = "./tmp/image.png"
     
     # Overlay text on image
-    overlay_text_on_png(template_path, "./tmp/image.png", text_lines, positions=[(730, 460), (302, 420), (230, 212)], font_path='./Courier-Bold.otf', font_size=30)
+    overlay_text_on_png(template_path, output_image_path, text_lines, positions=[(730, 460), (302, 420), (230, 212)], font_path='./Courier-Bold.otf', font_size=30)
 
     # Create PDF from image
+    # Create PDF from image
     pdf_path = "./tmp/certificate.pdf"
-    c = canvas.Canvas(pdf_path, landscape(A4))
-    c.drawImage("./tmp/image.png", 0, 0, width=A4[0], height=letter[1])
+    c = canvas.Canvas(pdf_path, pagesize=landscape(A4))  # Set canvas to landscape A4
+
+    # Load the image again to get its size
+    img = Image.open(output_image_path)
+    img_width, img_height = img.size
+
+    # Calculate the aspect ratio
+    aspect = img_width / img_height
+
+    # Calculate new dimensions to fit A4 while maintaining aspect ratio
+    a4_width, a4_height = landscape(A4)
+    if a4_width / a4_height > aspect:
+        new_height = a4_height
+        new_width = a4_height * aspect
+    else:
+        new_width = a4_width
+        new_height = a4_width / aspect
+
+    # Center the image on the PDF
+    x_offset = (a4_width - new_width) / 2
+    y_offset = (a4_height - new_height) / 2
+
+    c.drawImage(output_image_path, x_offset, y_offset, width=new_width, height=new_height)
     c.save()
+
 
     # Return PDF file as streaming response
     pdf_stream = open(pdf_path, "rb")
