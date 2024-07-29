@@ -100,11 +100,17 @@ async def generate_certificate(
         medical_council_number.upper(),
         state_of_medical_council.upper()
     ]
-
+    positions = []
+    font_path='./Courier-Bold.otf'
+        
     # Choose template based on category
     if category.lower() == 'faculty':
         template_path = './certificate/faculty_certificate.jpg'
+        positions=[(730, 455), (790, 490), (770, 528)]
+        font_size=100
     elif category.lower() == 'delegate':
+        positions=[(730, 455), (790, 490), (770, 528)]
+        font_size=35
         template_path = './certificate/delegate_certificate.png'
     else:
         raise HTTPException(status_code=400, detail="Invalid category")
@@ -115,7 +121,7 @@ async def generate_certificate(
     pdf_path = f"./tmp/certificate_{unique_id}.pdf"
     
     # Overlay text on image
-    overlay_text_on_png(template_path, output_image_path, text_lines, positions=[(730, 455), (790, 490), (770, 528)], font_path='./Courier-Bold.otf', font_size=35)
+    overlay_text_on_png(template_path, output_image_path, text_lines,positions,text_lines,font_path,font_size)
 
     # Create PDF from image
     # Create PDF from image
