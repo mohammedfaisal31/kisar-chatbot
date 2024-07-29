@@ -106,7 +106,7 @@ async def generate_certificate(
     # Choose template based on category
     if category.lower() == 'faculty':
         template_path = './certificate/faculty_certificate.jpg'
-        positions=[(3480, 2100), (3720, 2270), (2900, 2440)]
+        positions=[(3450, 2100), (3720, 2270), (2900, 2440)]
         font_size=150
     elif category.lower() == 'delegate':
         positions=[(730, 455), (790, 490), (770, 528)]
@@ -210,7 +210,7 @@ async def form():
             <input type="text" id="name" name="name" required>
 
             <label for="medical_council_number">Medical Council Number</label>
-            <input type="text" id="medical_council_number" name="medical_council_number" pattern="\d+" required>
+            <input type="text" id="medical_council_number" name="medical_council_number"  title="Medical council number must contain only digits" pattern="\d+" required>
 
             <label for="state_of_medical_council">State of Medical Council</label>
             <select id="state_of_medical_council" name="state_of_medical_council" required>
