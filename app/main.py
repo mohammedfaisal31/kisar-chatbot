@@ -109,15 +109,16 @@ async def generate_certificate(
     else:
         raise HTTPException(status_code=400, detail="Invalid category")
 
+    unique_id = str(uuid.uuid4())
     # Prepare output path
-    output_image_path = "./tmp/image.png"
+    output_image_path = f"./tmp/image_{unique_id}.png"
+    pdf_path = f"./tmp/certificate_{unique_id}.pdf"
     
     # Overlay text on image
-    overlay_text_on_png(template_path, output_image_path, text_lines, positions=[(730, 455), (790, 490), (770, 525)], font_path='./Courier-Bold.otf', font_size=35)
+    overlay_text_on_png(template_path, output_image_path, text_lines, positions=[(730, 455), (790, 490), (770, 528)], font_path='./Courier-Bold.otf', font_size=35)
 
     # Create PDF from image
     # Create PDF from image
-    pdf_path = "./tmp/certificate.pdf"
     c = canvas.Canvas(pdf_path, pagesize=landscape(A4))  # Set canvas to landscape A4
 
     # Load the image again to get its size
