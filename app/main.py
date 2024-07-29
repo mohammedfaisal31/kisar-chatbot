@@ -110,7 +110,7 @@ async def generate_certificate(
         font_size=150
     elif category.lower() == 'delegate':
         positions=[(730, 455), (790, 490), (770, 528)]
-        font_size=35
+        font_size=38
         template_path = './certificate/delegate_certificate.png'
     else:
         raise HTTPException(status_code=400, detail="Invalid category")
