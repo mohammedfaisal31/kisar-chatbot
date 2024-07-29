@@ -106,7 +106,7 @@ async def generate_certificate(
     # Choose template based on category
     if category.lower() == 'faculty':
         template_path = './certificate/faculty_certificate.jpg'
-        positions=[(3600, 2200), (3720, 2300), (1420, 2500)]
+        positions=[(3500, 2100), (3720, 2280), (2900, 2450)]
         font_size=150
     elif category.lower() == 'delegate':
         positions=[(730, 455), (790, 490), (770, 528)]
