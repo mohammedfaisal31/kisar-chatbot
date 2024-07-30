@@ -86,7 +86,7 @@ async def generate_certificate(
     name: str = Form(...),
     profession: str = Form(...),
     medical_council_number: str = Form(None),
-    state_of_medical_council: StateEnum = Form(...),
+    state_of_medical_council: StateEnum = Form(None),
     category: str = Form(...),
 ):
     # Prepare certificate text based on profession
@@ -94,14 +94,16 @@ async def generate_certificate(
         if not medical_council_number:
             raise HTTPException(status_code=400, detail="Medical council number is mandatory for Clinician")
         council_number_text = medical_council_number.upper()
+        state_text = state_of_medical_council.upper()
     else:
         council_number_text = f"NA ({profession.capitalize()})" if profession != "Other" else "NA"
+        state_text = "NA"
 
     # Prepare certificate text
     text_lines = [
         name.upper(),
         council_number_text,
-        state_of_medical_council.upper()
+        state_text
     ]
     positions = []
     font_path = './Courier-Bold.otf'
@@ -204,6 +206,19 @@ async def form():
                 border-radius: 4px;
             }}
         </style>
+        <script>
+            function toggleMedicalCouncilFields() {{
+                var profession = document.getElementById('profession').value;
+                var medicalCouncilFields = document.getElementById('medical-council-fields');
+                if (profession === 'Clinician') {{
+                    medicalCouncilFields.style.display = 'block';
+                }} else {{
+                    medicalCouncilFields.style.display = 'none';
+                    document.getElementById('medical_council_number').value = '';
+                    document.getElementById('state_of_medical_council').selectedIndex = 0;
+                }}
+            }}
+        </script>
     </head>
     <body>
         <h2>Generate Certificate</h2>
@@ -212,20 +227,22 @@ async def form():
             <input type="text" id="name" name="name" required>
 
             <label for="profession">Profession</label>
-            <select id="profession" name="profession" required>
+            <select id="profession" name="profession" required onchange="toggleMedicalCouncilFields()">
                 <option value="Clinician">Clinician</option>
                 <option value="Embryologist">Embryologist</option>
                 <option value="Scientist">Scientist</option>
                 <option value="Other">Other</option>
             </select>
 
-            <label for="medical_council_number">Medical Council Number</label>
-            <input type="text" id="medical_council_number" name="medical_council_number">
+            <div id="medical-council-fields">
+                <label for="medical_council_number">Medical Council Number</label>
+                <input type="text" id="medical_council_number" name="medical_council_number">
 
-            <label for="state_of_medical_council">State of Medical Council</label>
-            <select id="state_of_medical_council" name="state_of_medical_council" required>
-                {state_options}
-            </select>
+                <label for="state_of_medical_council">State of Medical Council</label>
+                <select id="state_of_medical_council" name="state_of_medical_council">
+                    {state_options}
+                </select>
+            </div>
 
             <label for="category">Category</label>
             <select id="category" name="category" required>
