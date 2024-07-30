@@ -5,21 +5,20 @@ import os
 from dotenv import load_dotenv
 from db import *
 from models import *
-from utils import processWhatsAppMessage, sendPaymentLinkTemplate, processPayment, generate_pdf_with_qr_and_text,sendDocumentTemplate
+from utils import processWhatsAppMessage, sendPaymentLinkTemplate, processPayment, generate_pdf_with_qr_and_text, sendDocumentTemplate
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from bulkRegister import bulkRegister
 from io import BytesIO
-from reportlab.lib.pagesizes import A4,landscape
+from reportlab.lib.pagesizes import A4, landscape
 import zipfile
 from qr import *
-from fastapi.responses import StreamingResponse,HTMLResponse
+from fastapi.responses import StreamingResponse, HTMLResponse
 from pydantic import BaseModel
 from typing import List
 from enum import Enum
 import tempfile
 import uuid
-
 
 load_dotenv()
 
@@ -41,7 +40,6 @@ app.add_middleware(
 )
 
 
-
 class StateEnum(str, Enum):
     Karnataka = "Karnataka"
     Tamil_Nadu = "Tamil Nadu"
@@ -49,9 +47,6 @@ class StateEnum(str, Enum):
     Telangana = "Telangana"
     Kerala = "Kerala"
     Maharashtra = "Maharashtra"
-    # Add other Indian states here
-    # Example: Gujarat = "Gujarat", West_Bengal = "West Bengal", etc.
-    # For brevity, add all other states as needed
     Gujarat = "Gujarat"
     West_Bengal = "West Bengal"
     Uttar_Pradesh = "Uttar Pradesh"
@@ -77,40 +72,48 @@ class StateEnum(str, Enum):
     Delhi = "Delhi"
     Puducherry = "Puducherry"
 
+
 class CertificateRequest(BaseModel):
     name: str
     medical_council_number: str
     state_of_medical_council: StateEnum
     category: str
+    profession: str
+
 
 @kisar_router.post("/generate_certificate")
 async def generate_certificate(
     name: str = Form(...),
-    medical_council_number: str = Form(...),
+    profession: str = Form(...),
+    medical_council_number: str = Form(None),
     state_of_medical_council: StateEnum = Form(...),
     category: str = Form(...),
 ):
-    # Validate that medical_council_number contains only digits
-    if not medical_council_number.isdigit():
-        raise HTTPException(status_code=400, detail="Medical council number must contain only digits")
+    # Prepare certificate text based on profession
+    if profession.lower() == "clinician":
+        if not medical_council_number:
+            raise HTTPException(status_code=400, detail="Medical council number is mandatory for Clinician")
+        council_number_text = medical_council_number.upper()
+    else:
+        council_number_text = f"NA ({profession.capitalize()})" if profession != "Other" else "NA"
 
     # Prepare certificate text
     text_lines = [
         name.upper(),
-        medical_council_number.upper(),
+        council_number_text,
         state_of_medical_council.upper()
     ]
     positions = []
-    font_path='./Courier-Bold.otf'
-        
+    font_path = './Courier-Bold.otf'
+
     # Choose template based on category
     if category.lower() == 'faculty':
         template_path = './certificate/faculty_certificate.jpg'
-        positions=[(3450, 2100), (3720, 2270), (2900, 2440)]
-        font_size=150
+        positions = [(3450, 2100), (3720, 2270), (2900, 2440)]
+        font_size = 150
     elif category.lower() == 'delegate':
-        positions=[(730, 455), (790, 490), (770, 528)]
-        font_size=38
+        positions = [(730, 455), (790, 490), (770, 528)]
+        font_size = 38
         template_path = './certificate/delegate_certificate.png'
     else:
         raise HTTPException(status_code=400, detail="Invalid category")
@@ -119,11 +122,10 @@ async def generate_certificate(
     # Prepare output path
     output_image_path = f"./tmp/image_{unique_id}.jpg"
     pdf_path = f"./tmp/certificate_{unique_id}.pdf"
-    
-    # Overlay text on image
-    overlay_text_on_png(template_path, output_image_path, text_lines,positions,font_path,font_size)
 
-    # Create PDF from image
+    # Overlay text on image
+    overlay_text_on_png(template_path, output_image_path, text_lines, positions, font_path, font_size)
+
     # Create PDF from image
     c = canvas.Canvas(pdf_path, pagesize=landscape(A4))  # Set canvas to landscape A4
 
@@ -150,14 +152,14 @@ async def generate_certificate(
     c.drawImage(output_image_path, x_offset, y_offset, width=new_width, height=new_height)
     c.save()
 
-
     # Return PDF file as streaming response
     pdf_stream = open(pdf_path, "rb")
     return StreamingResponse(pdf_stream, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=certificate_{unique_id}.pdf"})
 
+
 @kisar_router.get("/certificate")
 async def form():
-        # Generate state options HTML
+    # Generate state options HTML
     state_options = "\n".join(
         [f'<option value="{state}">{state}</option>' for state in StateEnum]
     )
@@ -209,8 +211,16 @@ async def form():
             <label for="name">Name</label>
             <input type="text" id="name" name="name" required>
 
+            <label for="profession">Profession</label>
+            <select id="profession" name="profession" required>
+                <option value="Clinician">Clinician</option>
+                <option value="Embryologist">Embryologist</option>
+                <option value="Scientist">Scientist</option>
+                <option value="Other">Other</option>
+            </select>
+
             <label for="medical_council_number">Medical Council Number</label>
-            <input type="text" id="medical_council_number" name="medical_council_number"  title="Medical council number must contain only digits" pattern="\d+" required>
+            <input type="text" id="medical_council_number" name="medical_council_number">
 
             <label for="state_of_medical_council">State of Medical Council</label>
             <select id="state_of_medical_council" name="state_of_medical_council" required>
@@ -230,24 +240,26 @@ async def form():
     """
     return HTMLResponse(content=html)
 
+
 def overlay_text_on_png(template_path, output_path, text_lines, positions, font_path='./Courier-Bold.otf', font_size=20):
     # Load the template image
     img = Image.open(template_path)
     draw = ImageDraw.Draw(img)
-    
+
     # Load a custom font
     font = ImageFont.truetype(font_path, font_size)
-    
+
     # Draw each line of text
     for text, (x, y) in zip(text_lines, positions):
         draw.text((x, y), text, font=font, fill='black')  # Draw text on image
-    
+
     # Save the modified image
     img.save(output_path)
+
+
 # Include the kisar_router in the main app
 app.include_router(kisar_router)
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
-
